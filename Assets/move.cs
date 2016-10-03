@@ -8,6 +8,7 @@ public class move : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		print ("IN MOVE START\n");
 		rb = GetComponent<Rigidbody> ();
 		cam = Camera.main.transform;
 		moving = 0;
