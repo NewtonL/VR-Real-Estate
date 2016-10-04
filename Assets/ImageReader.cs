@@ -3,23 +3,25 @@ using System.Collections;
 
 public class ImageReader : MonoBehaviour {
 
-	Texture2D tex;
-	string path = "http://i.imgur.com/xK1NKqJ.png";
+	string path = "http://i.imgur.com/WxrwOla.png";
 	WWW www;
 
 	// Use this for initialization
 	void Start () {
-		print ("IN START\n");
+		
 		StartCoroutine (loadImage ());
 		int x, y;
-		GetComponent<Renderer> ().material.mainTexture = tex;
-		for (x = 0; x < 50; x++) {
-			for (y = 0; y < 50; y++) {
-				print(tex.GetPixel (x, y));
+		//GetComponent<Renderer> ().material.mainTexture = tex;
+		for (x = 0; x < www.texture.width; x++) {
+			for (y = 0; y < www.texture.height; y++) {
+				Color32 c = www.texture.GetPixel (x, y);
+				print(c);
 			}
 		}
 
-		tex.Apply ();
+		//tex.Apply ();
+
+
 
 	}
 	
@@ -30,12 +32,8 @@ public class ImageReader : MonoBehaviour {
 	}
 
 	IEnumerator loadImage(){
-		print ("HERE\n");
-		tex = new Texture2D (50, 50);
-
 		www = new WWW (path);
 		yield return www; //wait for download to finish
-		www.LoadImageIntoTexture (tex);
 	}
 
 }
