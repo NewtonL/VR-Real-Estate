@@ -3,7 +3,7 @@ using System.Collections;
 
 public class ImageReader : MonoBehaviour {
 
-	string path = "http://i.imgur.com/WxrwOla.png";
+	string path = "http://i.imgur.com/bOMSSlV.png";
 	WWW www;
 
 	// Use this for initialization
@@ -11,18 +11,22 @@ public class ImageReader : MonoBehaviour {
 		
 		StartCoroutine (loadImage ());
 		int x, y;
-		//GetComponent<Renderer> ().material.mainTexture = tex;
 		for (x = 0; x < www.texture.width; x++) {
 			for (y = 0; y < www.texture.height; y++) {
 				Color32 c = www.texture.GetPixel (x, y);
-				print(c);
+				//print(c);
+				//if colour is not white, place a block
+				Color32 white = new Color(255,255,255,255);
+				if((Color) c != (Color) white){
+					//print ("I'm not  white");
+					print(x+","+y);
+					Vector3 v = new Vector3((x-30)*0.2f,0,(y-60)*0.2f);
+					Quaternion q = new Quaternion (0, 0, 0, 0);
+					Instantiate(Resources.Load("cube"), v, q);
+				}
+
 			}
 		}
-
-		//tex.Apply ();
-
-
-
 	}
 	
 	// Update is called once per frame
