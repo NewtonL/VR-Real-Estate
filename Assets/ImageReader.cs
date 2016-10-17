@@ -37,7 +37,10 @@ public class ImageReader : MonoBehaviour {
 
 	IEnumerator loadImage(){
 		www = new WWW (path);
-		yield return www; //wait for download to finish
+		while (www.isDone == false) {
+			print ("Still downloading\n");
+		}
+		yield return www;
 	}
 
 }
