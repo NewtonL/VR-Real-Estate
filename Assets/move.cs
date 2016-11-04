@@ -15,14 +15,20 @@ public class move : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetButtonDown ("Fire1")) {
-			moving = 1;
-		} else if (Input.GetButtonUp ("Fire1")) {
-			moving = 0;
-		}
-
-		if (moving == 1) {
+		if (Input.GetButton ("Fire1") || Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) {
 			Vector3 v = new Vector3 (cam.forward.x * 0.1f, 0, cam.forward.z * 0.1f);
+			rb.MovePosition (transform.position + v);
+		} 
+		if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) {
+			Vector3 v = new Vector3 (cam.right.x * 0.1f, 0, cam.right.z * 0.1f);
+			rb.MovePosition (transform.position - v);
+		} 
+		if (Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.DownArrow)) {
+			Vector3 v = new Vector3 (cam.forward.x * 0.1f, 0, cam.forward.z * 0.1f);
+			rb.MovePosition (transform.position - v);
+		} 
+		if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) {
+			Vector3 v = new Vector3 (cam.right.x * 0.1f, 0, cam.right.z * 0.1f);
 			rb.MovePosition (transform.position + v);
 		}
 
