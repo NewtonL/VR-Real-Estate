@@ -3,19 +3,30 @@ using System.Collections;
 
 public class ImageReader : MonoBehaviour {
 
-	string path = "http://i.imgur.com/CMRCsV1.png";
+	string path = "http://www.colebrook.net/wp-content/uploads/2012/08/RG-3-bdrm-with-balcony.jpg";
 	WWW www;
-	Color32 white = new Color(255,255,255,255);
-	Color32 black = new Color(0,0,0,255);
+	Color32 white = new Color32(255,255,255,1);
+	Color32 black = new Color32(10,10,10,1);
 	Color32[] pixels;
-
+	Texture2D scaledDown;
 
 	// Use this for initialization
 	void Start () {
 		
 		StartCoroutine ("loadImage");
-		int x, y;
-		//pixels = www.texture.GetPixels32();
+
+		//scale down the image, larger images will be scaled down more
+		if (www.texture.width >= 500) {
+			int scale = www.texture.width / 300;
+			int newWidth = 300;
+			int newHeight = www.texture.height / scale;
+			scaledDown = Instantiate (www.texture);
+			TextureScale.Bilinear (scaledDown, newWidth, newHeight);
+		}
+		else
+			scaledDown = Instantiate (www.texture);
+
+
 		StartCoroutine ("Build");
 
 
@@ -36,106 +47,30 @@ public class ImageReader : MonoBehaviour {
 
 	IEnumerator Build(){
 		int x, y;
-		for (x = 0; x < www.texture.width; x+=4) {
-			for (y = 0; y < www.texture.height; y+=4) {
-				Color32 c1 = www.texture.GetPixel (x, y);
-				Color32 c2 = www.texture.GetPixel (x+2, y+2);
-				//Color32 c3 = www.texture.GetPixel (x+2, y+2);
-				//Color32 c4 = www.texture.GetPixel (x+3, y+3);
-				//Color32 c5 = www.texture.GetPixel (x+4, y+4);
+		int width = scaledDown.width;
+		int height = scaledDown.height;
+		int ratio = width / height;
+		int x_incr = width / (200*ratio);
+		int y_incr = height / 200;
+		Quaternion q = new Quaternion (0, 0, 0, 0);
+		for (x = 0; x < width; x+=x_incr) {
+			for (y = 0; y < height; y+=y_incr) {
+				Vector3 v = new Vector3 ((x - 170) * 0.2f, 0, (y - 150) * 0.2f);
+				Color32 c1 = scaledDown.GetPixel (x, y);
+				Color32 c3 = scaledDown.GetPixel (x+(x_incr/2), y+(y_incr/2));
+
 
 				//if color is black, place a wall
-				if ((Color)c1 == (Color)black) {
-					Vector3 v = new Vector3 ((x - 40) * 0.2f, 0, (y - 70) * 0.2f);
-					Quaternion q = new Quaternion (0, 0, 0, 0);
+				if (Mathf.Abs(c1.r - black.r) <= 10) {
 					Instantiate (Resources.Load ("Wall"), v, q);
 				} 
-				//else if color is grey, place a window
-				else if (c1.r < white.r && c1.r > black.r) {
-					Vector3 v = new Vector3 ((x - 40) * 0.2f, 0, (y - 70) * 0.2f);
-					Quaternion q = new Quaternion (0, 0, 0, 0);
-					Instantiate (Resources.Load ("Window"), v, q);
-				}
 
 				//if color is black, place a wall
-				if ((Color)c2 == (Color)black) {
-					Vector3 v = new Vector3 ((x+2 - 40) * 0.2f, 0, (y+2 - 70) * 0.2f);
-					Quaternion q = new Quaternion (0, 0, 0, 0);
+				if (Mathf.Abs(c3.r - black.r) <= 10) {
 					Instantiate (Resources.Load ("Wall"), v, q);
 				} 
-				//else if color is grey, place a window
-				else if (c2.r < white.r && c2.r > black.r) {
-					Vector3 v = new Vector3 ((x+2 - 40) * 0.2f, 0, (y+2 - 70) * 0.2f);
-					Quaternion q = new Quaternion (0, 0, 0, 0);
-					Instantiate (Resources.Load ("Window"), v, q);
-				}
 
-				//if color is black, place a wall
-				if ((Color)c2 == (Color)black) {
-					Vector3 v = new Vector3 ((x+2 - 40) * 0.2f, 0, (y - 70) * 0.2f);
-					Quaternion q = new Quaternion (0, 0, 0, 0);
-					Instantiate (Resources.Load ("Wall"), v, q);
-				} 
-				//else if color is grey, place a window
-				else if (c2.r < white.r && c2.r > black.r) {
-					Vector3 v = new Vector3 ((x+2 - 40) * 0.2f, 0, (y - 70) * 0.2f);
-					Quaternion q = new Quaternion (0, 0, 0, 0);
-					Instantiate (Resources.Load ("Window"), v, q);
-				}
 
-				//if color is black, place a wall
-				if ((Color)c2 == (Color)black) {
-					Vector3 v = new Vector3 ((x - 40) * 0.2f, 0, (y+2 - 70) * 0.2f);
-					Quaternion q = new Quaternion (0, 0, 0, 0);
-					Instantiate (Resources.Load ("Wall"), v, q);
-				} 
-				//else if color is grey, place a window
-				else if (c2.r < white.r && c2.r > black.r) {
-					Vector3 v = new Vector3 ((x - 40) * 0.2f, 0, (y+2 - 70) * 0.2f);
-					Quaternion q = new Quaternion (0, 0, 0, 0);
-					Instantiate (Resources.Load ("Window"), v, q);
-				}
-				/*
-				//if color is black, place a wall
-				if ((Color)c3 == (Color)black) {
-					Vector3 v = new Vector3 ((x+2 - 40) * 0.2f, 0, (y+2 - 70) * 0.2f);
-					Quaternion q = new Quaternion (0, 0, 0, 0);
-					Instantiate (Resources.Load ("Wall"), v, q);
-				} 
-				//else if color is grey, place a window
-				else if (c3.r < white.r && c3.r > black.r) {
-					Vector3 v = new Vector3 ((x+2 - 40) * 0.2f, 0, (y+2 - 70) * 0.2f);
-					Quaternion q = new Quaternion (0, 0, 0, 0);
-					Instantiate (Resources.Load ("Window"), v, q);
-				}
-
-				//if color is black, place a wall
-				if ((Color)c4 == (Color)black) {
-					Vector3 v = new Vector3 ((x+3 - 40) * 0.2f, 0, (y+3 - 70) * 0.2f);
-					Quaternion q = new Quaternion (0, 0, 0, 0);
-					Instantiate (Resources.Load ("Wall"), v, q);
-				}
-
-				//else if color is grey, place a window
-				else if (c4.r < white.r && c4.r > black.r) {
-					Vector3 v = new Vector3 ((x+3 - 40) * 0.2f, 0, (y+3 - 70) * 0.2f);
-					Quaternion q = new Quaternion (0, 0, 0, 0);
-					Instantiate (Resources.Load ("Window"), v, q);
-				}
-
-				//if color is black, place a wall
-				if ((Color)c5 == (Color)black) {
-					Vector3 v = new Vector3 ((x+4 - 40) * 0.2f, 0, (y+4 - 70) * 0.2f);
-					Quaternion q = new Quaternion (0, 0, 0, 0);
-					Instantiate (Resources.Load ("Wall"), v, q);
-				} 
-				//else if color is grey, place a window
-				else if (c5.r < white.r && c5.r > black.r) {
-					Vector3 v = new Vector3 ((x+4 - 40) * 0.2f, 0, (y+4 - 70) * 0.2f);
-					Quaternion q = new Quaternion (0, 0, 0, 0);
-					Instantiate (Resources.Load ("Window"), v, q);
-				}
-				*/
 			}
 			yield return null;
 		}
