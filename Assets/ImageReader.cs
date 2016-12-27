@@ -3,22 +3,26 @@ using System.Collections;
 
 public class ImageReader : MonoBehaviour {
 
+	//http://www.colebrook.net/wp-content/uploads/2012/08/RG-3-bdrm-with-balcony.jpg
+	//http://www.roomsketcher.com/wp-content/uploads/2014/08/RoomSketcher-2D-Floor-Plan-1.jpg
 	string path = "http://www.roomsketcher.com/wp-content/uploads/2014/08/RoomSketcher-2D-Floor-Plan-1.jpg";
 	WWW www;
 	Color32 white = new Color32(255,255,255,1);
 	Color32 black = new Color32(10,10,10,1);
 	Color32[] pixels;
 	Texture2D scaledDown;
+	int wallIndex = 0;
 
 	struct Wall
 	{
 		public int x;
 		public int startY;
 		public int endY;
+		public int type; //0 = solid wall, 1 = window
 	};  
+		
+	Wall[] wallList = new Wall[10000];
 
-	Wall[] wallList = new Wall[1000];
-	Wall[] windowList = new Wall[10000];
 
 	// Use this for initialization
 	void Start () {
@@ -56,8 +60,6 @@ public class ImageReader : MonoBehaviour {
 	}
 
 	IEnumerator Build(){
-		int wallIndex = 0;
-		int windowIndex = 0;
 		int x, y;
 		int width = scaledDown.width;
 		int height = scaledDown.height;
@@ -71,16 +73,19 @@ public class ImageReader : MonoBehaviour {
 			Wall newWall = new Wall();
 			newWall.x = 0;
 			newWall.startY = 0;
+			newWall.type = 0;
 
 			Wall newWindow = new Wall ();
 			newWindow.x = 0;
 			newWindow.startY = 0;
+			newWindow.type = 1;
 
 			for (y = 0; y < height; y+=y_incr) {
 				Color32 c1 = scaledDown.GetPixel (x, y);
 
+
 				//if color is black, we found a wall
-				if (Mathf.Abs (c1.r - black.r) <= 10) {
+				if (Mathf.Abs (c1.r - black.r) <= 20) {
 					if(left == 0){
 						left = x;	//leftmost edge of the property, only set once
 					}
@@ -94,7 +99,20 @@ public class ImageReader : MonoBehaviour {
 						newWall.x = x;
 						newWall.startY = y;
 					}
-				} else if (Mathf.Abs (c1.r - black.r) > 10 && Mathf.Abs (c1.r - black.r) <= 200) {
+
+					//if we found a wall, need to close off the window
+					if (newWindow.startY != 0) {
+						newWindow.x = x;
+						newWindow.endY = y;
+
+						wallList [wallIndex] = newWindow;
+						wallIndex++;
+
+						newWindow.x = 0;
+						newWindow.startY = 0;
+					}
+				//found a window
+				} else if (Mathf.Abs (c1.r - black.r) > 20 && Mathf.Abs (c1.r - black.r) <= 200) {
 					if (newWindow.startY == 0) {
 						newWindow.x = x;
 						newWindow.startY = y;
@@ -102,7 +120,7 @@ public class ImageReader : MonoBehaviour {
 				}
 					
 				//we have reached the endpoint of a wall, add it to the array wallList
-				if(Mathf.Abs (c1.r - black.r) > 10){
+				if(Mathf.Abs (c1.r - black.r) > 20){
 					if (newWall.startY != 0) {
 						newWall.x = x;
 						newWall.endY = y;
@@ -116,8 +134,8 @@ public class ImageReader : MonoBehaviour {
 						newWindow.x = x;
 						newWindow.endY = y;
 
-						windowList [windowIndex] = newWindow;
-						windowIndex++;
+						wallList [wallIndex] = newWindow;
+						wallIndex++;
 
 						newWindow.x = 0;
 						newWindow.startY = 0;
@@ -131,34 +149,35 @@ public class ImageReader : MonoBehaviour {
 
 		//Place all the walls inside the scene by instantiating a wall for each wall in wallList
 		//One object is made for each wall, the length is adjusted based on the start and endpoints
-		for (int i = 0; i < 1000; i++) {
-			if (wallList [i].startY != 0) {
+		for (int i = 0; i < 10000; i++) {
+			if (wallList[i].startY != 0) {
 				int length = wallList [i].endY - wallList [i].startY;
-				int center = wallList[i].startY + length/ 2;
-				Vector3 v = new Vector3 ((wallList [i].x - 170) * 0.2f, 0, (center - 150) * 0.2f);
-				GameObject newWall = (GameObject)Resources.Load ("Wall");
+				int center = wallList [i].startY + length / 2;
+				Vector3 v = new Vector3 ((wallList [i].x - 170) * 0.2f, 2f, (center - 150) * 0.2f);
 				float lengthScale = Mathf.Max (1, length / 5);
-				newWall.transform.localScale = new Vector3 (1f, 5f, lengthScale);
-				Instantiate (newWall, v, q);
-			}
+				if (wallList [i].type == 0) {
+					GameObject newWall = (GameObject)Resources.Load ("Wall");
+					newWall.transform.localScale = new Vector3 (1f, 5f, lengthScale);
 
-			if (windowList [i].startY != 0) {
-				bool rightEdge = Mathf.Abs (windowList [i].x - right) < 3;
-				bool leftEdge = Mathf.Abs (windowList [i].x - left) < 3;
-				bool topEdge = (Mathf.Abs (windowList [i].endY - top) < 3) && (windowList[i].endY - windowList[i].startY)<3;
-				bool bottomEdge = (Mathf.Abs (windowList [i].endY - bottom) < 3) && (windowList[i].endY - windowList[i].startY)<3;
-				if (rightEdge || leftEdge || topEdge || bottomEdge) {
-					int length = windowList [i].endY - windowList [i].startY;
-					int center = windowList [i].startY + length / 2;
-					Vector3 v = new Vector3 ((windowList [i].x - 170) * 0.2f, 0, (center - 150) * 0.2f);
-					GameObject newWindow = (GameObject)Resources.Load ("Window");
-					float lengthScale = Mathf.Max (1, length / 5);
-					newWindow.transform.localScale = new Vector3 (1f, 5f, lengthScale);
-					Instantiate (newWindow, v, q);
+					print ("wall x = " + wallList [i].x + ", startY = " + wallList [i].startY + ", endY = " + wallList [i].endY);
+					Instantiate (newWall, v, q);
+
+				} else if (wallList [i].type == 1) {
+					
+					bool rightEdge = Mathf.Abs (wallList [i].x - right) < 3;
+					bool leftEdge = Mathf.Abs (wallList [i].x - left) < 3;
+					bool topEdge = (Mathf.Abs (wallList [i].endY - top) < 3) && (wallList [i].endY - wallList [i].startY) < 3;
+					bool bottomEdge = (Mathf.Abs (wallList [i].endY - bottom) < 3) && (wallList [i].endY - wallList [i].startY) < 3;
+					if (rightEdge || leftEdge || topEdge || bottomEdge) {
+						GameObject newWindow = (GameObject)Resources.Load ("Window");
+						newWindow.transform.localScale = new Vector3 (1f, 5f, lengthScale);
+
+						Instantiate (newWindow, v, q);
+					}
+
 				}
 			}
 		}
-		print ("top is: " + top + " bottom is: " + bottom + " right is: " + right + " left is: " + left);
 	}
 
 }
