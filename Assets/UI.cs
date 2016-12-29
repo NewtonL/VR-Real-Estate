@@ -20,9 +20,17 @@ public class UI : MonoBehaviour {
 		}
 	}
 
-	public void OnClick(){
+	public void Button1(){
 		Vector3 v = new Vector3 (0, 0, 0);
 		Quaternion q = new Quaternion (0, 0, 0, 0);
 		Instantiate (Resources.Load("Wall"), v, q);
+	}
+
+	public void Button2(){
+		GameObject[] walls = GameObject.FindGameObjectsWithTag ("Wall");
+		foreach (GameObject wall in walls) {
+			wall.GetComponent<Renderer> ().material.color = Color.red;
+		}
+
 	}
 }

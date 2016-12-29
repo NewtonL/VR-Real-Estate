@@ -159,7 +159,8 @@ public class ImageReader : MonoBehaviour {
 					GameObject newWall = (GameObject)Resources.Load ("Wall");
 					newWall.transform.localScale = new Vector3 (1f, 5f, lengthScale);
 
-					print ("wall x = " + wallList [i].x + ", startY = " + wallList [i].startY + ", endY = " + wallList [i].endY);
+					newWall.gameObject.tag = "Wall";
+
 					Instantiate (newWall, v, q);
 
 				} else if (wallList [i].type == 1) {
