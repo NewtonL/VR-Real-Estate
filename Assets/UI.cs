@@ -10,7 +10,7 @@ public class UI : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		//this.transform.GetChild (0).gameObject.SetActive (false);
+		this.transform.GetChild (0).gameObject.SetActive (false);
 
 
 	}
