@@ -36,7 +36,6 @@ public class ImageReader : MonoBehaviour {
 			int newWidth = 300;
 			float newHeight = www.texture.height / scale;
 
-			//print (" Width is: " + www.texture.width + ", Height is: " + www.texture.height + ", scale is: " + scale + ", newWidth is: " + newWidth + ", newHeight is: " + (int) newHeight);
 
 			scaledDown = Instantiate (www.texture);
 			TextureScale.Bilinear (scaledDown, newWidth, (int) newHeight);
@@ -180,9 +179,7 @@ public class ImageReader : MonoBehaviour {
 				oldRight = right;
 			yield return null;
 		}
-
-
-		//print ("Right is " + right + ", Left is " + left + ", Top is " + top + ", Bottom is " + bottom);
+			
 
 		//Place all the walls inside the scene by instantiating a wall for each wall in wallList
 		//One object is made for each wall, the length is adjusted based on the start and endpoints
@@ -194,7 +191,7 @@ public class ImageReader : MonoBehaviour {
 				float lengthScale = Mathf.Max (1, length / 4);
 				if (wallList [i].type == 0) {
 
-					//print("Wall x = " + wallList[i].x + ", startY = " + wallList[i].startY + ", endY = " + wallList[i].endY);
+					print("Wall x = " + wallList[i].x + ", startY = " + wallList[i].startY + ", endY = " + wallList[i].endY);
 
 					GameObject newWall = (GameObject)Resources.Load ("Wall");
 					newWall.transform.localScale = new Vector3 (1f, 6f, lengthScale);
@@ -204,25 +201,24 @@ public class ImageReader : MonoBehaviour {
 					Instantiate (newWall, v, q);
 
 				} else if (wallList [i].type == 1) {
-
-					print ("Top is: " + top + ", OldTop is: " + oldTop);
+					
 					bool rightEdge = Mathf.Abs (wallList [i].x - right) < 3 || Mathf.Abs (wallList [i].endY - oldRight) < 3;
 					bool leftEdge = Mathf.Abs (wallList [i].x - left) < 3;
 					bool topEdge = (Mathf.Abs (wallList [i].endY - top) < 3 || Mathf.Abs (wallList [i].endY - oldTop) < 3) && (wallList [i].endY - wallList [i].startY) < 3;
 					bool bottomEdge = (Mathf.Abs (wallList [i].endY - bottom) < 3) && (wallList [i].endY - wallList [i].startY) < 3;
 					if (rightEdge || leftEdge || topEdge || bottomEdge) {
-						//print("Window x = " + wallList[i].x + ", startY = " + wallList[i].startY + ", endY = " + wallList[i].endY);
 						
-						bool north = !wallGrid [wallList [i].x, Mathf.Min(height-1, wallList [i].endY + 1)];
-						bool south = !wallGrid [wallList [i].x, Mathf.Max(0, wallList [i].startY - 1)];
-						bool east = !wallGrid [Mathf.Min(width-1, wallList [i].x + 1), wallList [i].startY];
-						bool west = !wallGrid [Mathf.Max(0, wallList [i].x - 1), wallList [i].startY];
+						
+						bool north = !wallGrid [wallList [i].x, Mathf.Min(height-1, wallList [i].endY + 1)] && !wallGrid [wallList [i].x, Mathf.Min(height-1, wallList [i].endY + 2)];
+						bool south = !wallGrid [wallList [i].x, Mathf.Max(0, wallList [i].startY - 1)] && !wallGrid [wallList [i].x, Mathf.Max(0, wallList [i].startY - 2)];
+						bool east = !wallGrid [Mathf.Min(width-1, wallList [i].x + 1), wallList [i].startY] && !wallGrid [Mathf.Min(width-1, wallList [i].x + 1), wallList [i].endY];
+						bool west = !wallGrid [Mathf.Max(0, wallList [i].x - 1), wallList [i].startY] && !wallGrid [Mathf.Min(0, wallList [i].x - 1), wallList [i].endY];
 
 						if (north && south && east && west) {
 
 							GameObject newWindow = (GameObject)Resources.Load ("Window");
 							newWindow.transform.localScale = new Vector3 (1f, 6f, lengthScale);
-
+							print("Window1 x = " + wallList[i].x + ", startY = " + wallList[i].startY + ", endY = " + wallList[i].endY);
 							Instantiate (newWindow, v, q);
 						}
 						else {
@@ -242,7 +238,7 @@ public class ImageReader : MonoBehaviour {
 									v = new Vector3 ((wallList [i].x - 170) * 0.3f, 3f, (center - 150) * 0.3f);
 									lengthScale = Mathf.Max (1, length / 4);
 
-									//print("Window x = " + wallList[i].x + ", startY = " + wallList[i].startY + ", endY = " + wallList[i].endY);
+									print("Window2 x = " + wallList[i].x + ", startY = " + wallList[i].startY + ", endY = " + wallList[i].endY);
 
 									GameObject newWindow = (GameObject)Resources.Load ("Window");
 									newWindow.transform.localScale = new Vector3 (1f, 6f, lengthScale);
