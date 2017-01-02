@@ -6,7 +6,7 @@ public class ImageReader : MonoBehaviour {
 	//http://www.colebrook.net/wp-content/uploads/2012/08/RG-3-bdrm-with-balcony.jpg
 	//http://www.roomsketcher.com/wp-content/uploads/2014/08/RoomSketcher-2D-Floor-Plan-1.jpg
 	//http://www.roomsketcher.com/wp-content/uploads/2015/11/RoomSketcher-House-Floor-Plans-962270.jpg
-	string path = "http://www.roomsketcher.com/wp-content/uploads/2015/11/RoomSketcher-House-Floor-Plans-962270.jpg";
+	string path;
 	WWW www;
 	Color32 white = new Color32(255,255,255,1);
 	Color32 black = new Color32(10,10,10,1);
@@ -27,6 +27,23 @@ public class ImageReader : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+
+		#if UNITY_ANDROID && !UNITY_EDITOR
+			AndroidJavaClass jc = new AndroidJavaClass("com.unity3d.player.UnityPlayer"); 
+			AndroidJavaObject jo = jc.GetStatic<AndroidJavaObject>("currentActivity"); 
+			AndroidJavaObject clipboard = jo.Call<AndroidJavaObject>("getSystemService","clipboard");
+
+			AndroidJavaObject clipdata = clipboard.Call<AndroidJavaObject>("getPrimaryClip");
+			AndroidJavaObject item = clipdata.Call<AndroidJavaObject>("getItemAt", 0);
+			AndroidJavaObject text = item.Call<AndroidJavaObject>("getText");
+			path = text.Call<string>("toString");
+
+		#endif
+
+		#if UNITY_EDITOR
+			path = GUIUtility.systemCopyBuffer;
+		#endif
+		print ("Path is: " + path);
 
 		StartCoroutine ("loadImage");
 
@@ -191,7 +208,7 @@ public class ImageReader : MonoBehaviour {
 				float lengthScale = Mathf.Max (1, length / 4);
 				if (wallList [i].type == 0) {
 
-					print("Wall x = " + wallList[i].x + ", startY = " + wallList[i].startY + ", endY = " + wallList[i].endY);
+					//print("Wall x = " + wallList[i].x + ", startY = " + wallList[i].startY + ", endY = " + wallList[i].endY);
 
 					GameObject newWall = (GameObject)Resources.Load ("Wall");
 					newWall.transform.localScale = new Vector3 (1f, 6f, lengthScale);
@@ -218,7 +235,7 @@ public class ImageReader : MonoBehaviour {
 
 							GameObject newWindow = (GameObject)Resources.Load ("Window");
 							newWindow.transform.localScale = new Vector3 (1f, 6f, lengthScale);
-							print("Window1 x = " + wallList[i].x + ", startY = " + wallList[i].startY + ", endY = " + wallList[i].endY);
+							//print("Window1 x = " + wallList[i].x + ", startY = " + wallList[i].startY + ", endY = " + wallList[i].endY);
 							Instantiate (newWindow, v, q);
 						}
 						else {
@@ -238,7 +255,7 @@ public class ImageReader : MonoBehaviour {
 									v = new Vector3 ((wallList [i].x - 170) * 0.3f, 3f, (center - 150) * 0.3f);
 									lengthScale = Mathf.Max (1, length / 4);
 
-									print("Window2 x = " + wallList[i].x + ", startY = " + wallList[i].startY + ", endY = " + wallList[i].endY);
+									//print("Window2 x = " + wallList[i].x + ", startY = " + wallList[i].startY + ", endY = " + wallList[i].endY);
 
 									GameObject newWindow = (GameObject)Resources.Load ("Window");
 									newWindow.transform.localScale = new Vector3 (1f, 6f, lengthScale);
