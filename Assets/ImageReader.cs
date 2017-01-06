@@ -315,11 +315,11 @@ public class ImageReader : MonoBehaviour {
 
 						if (northeast || southeast || northwest || southwest) {		//detect doors by a diagonal line
 
-							for (int j = 0; j < 20; j++) {		//zero out the diagonal, so we don't detect any more doors
-								windowGrid [Mathf.Min(width-1, wallList [i].x + j), Mathf.Min (height - 1, wallList [i].endY + j)] = false;
-								windowGrid [Mathf.Min(width-1, wallList [i].x + j), Mathf.Max (0, wallList [i].startY - j)] = false;
-								windowGrid [Mathf.Max(0, wallList [i].x - j), Mathf.Min (height - 1, wallList [i].endY + j)] = false;
-								windowGrid [Mathf.Max(0, wallList [i].x - j), Mathf.Max (0, wallList [i].startY - j)] = false;
+							for (int m = wallList [i].x - 10; m < wallList [i].x + 10; m++) {
+								for (int n = wallList [i].startY - 10; n < wallList [i].endY + 10; n++) {
+									if (m >= 0 && m < width && n >= 0 && n < height)
+										windowGrid [m, n] = false;
+								}
 							}
 
 							v = new Vector3 ((wallList [i].x - 170) * 0.3f, 0f, (center - 150) * 0.3f);

@@ -10,15 +10,13 @@ public class UI : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		this.transform.GetChild (0).gameObject.SetActive (false);
+		//this.transform.GetChild (0).gameObject.SetActive (false);
 
 
 	}
 	
 	// Update is called once per frame
 	void Update () {
-
-		this.transform.position = Camera.main.transform.position + Camera.main.transform.forward * 30;	//keep menu in front of camera view
 
 		if (Input.GetKeyDown ("escape")) {	//use ESC key to hide or show menu
 			this.transform.GetChild (0).gameObject.SetActive (showUI);

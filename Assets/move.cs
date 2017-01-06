@@ -15,7 +15,7 @@ public class move : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetButton ("Fire1") || Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) {
+		if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.UpArrow)) {
 			Vector3 v = new Vector3 (cam.forward.x * 0.1f, 0, cam.forward.z * 0.1f);
 			rb.MovePosition (transform.position + v);
 		} 
