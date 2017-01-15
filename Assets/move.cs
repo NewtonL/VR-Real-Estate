@@ -4,13 +4,11 @@ using System.Collections;
 public class move : MonoBehaviour {
 	Rigidbody rb;
 	Transform cam;
-	int moving;
 
 	// Use this for initialization
 	void Start () {
 		rb = GetComponent<Rigidbody> ();
 		cam = Camera.main.transform;
-		moving = 0;
 	}
 
 	// Update is called once per frame

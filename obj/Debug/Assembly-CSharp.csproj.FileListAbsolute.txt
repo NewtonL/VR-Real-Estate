@@ -48,3 +48,11 @@ C:\Users\newto\Documents\gearVR\Temp\bin\Debug\UnityEngine.VR.xml
 C:\Users\newto\Documents\gearVR\obj\Debug\Assembly-CSharp.csprojResolveAssemblyReference.cache
 C:\Users\newto\Documents\gearVR\obj\Debug\Assembly-CSharp.dll
 C:\Users\newto\Documents\gearVR\obj\Debug\Assembly-CSharp.pdb
+C:\Users\Newton\Documents\gearVR\Temp\bin\Debug\UnityEngine.Analytics.dll
+C:\Users\Newton\Documents\gearVR\Temp\bin\Debug\UnityEngine.HoloLens.dll
+C:\Users\Newton\Documents\gearVR\Temp\bin\Debug\UnityEngine.PlaymodeTestsRunner.dll
+C:\Users\Newton\Documents\gearVR\Temp\bin\Debug\UnityEngine.VR.dll
+C:\Users\Newton\Documents\gearVR\Temp\bin\Debug\UnityEngine.PlaymodeTestsRunner.xml
+C:\Users\Newton\Documents\gearVR\Temp\bin\Debug\UnityEngine.Analytics.xml
+C:\Users\Newton\Documents\gearVR\Temp\bin\Debug\UnityEngine.HoloLens.xml
+C:\Users\Newton\Documents\gearVR\Temp\bin\Debug\UnityEngine.VR.xml
