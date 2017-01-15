@@ -54,7 +54,6 @@ public class ImageReader : MonoBehaviour {
 		//Calls function loadImage and waits until it finishes downloading the image
 		StartCoroutine ("loadImage");
 
-
 		//If the width of the image is over 500, we scale down the image using the TextureScale script
 		if (www.texture.width >= 500) {
 			float scale = www.texture.width / 300f;
@@ -119,17 +118,17 @@ public class ImageReader : MonoBehaviour {
 		int width = scaledDown.width;
 		int height = scaledDown.height;
 		int ratio = width / height;
-		int x_incr = width / (200*ratio);
-		int y_incr = Mathf.Max(1,height / 200);
-		int top=0, bottom=0, left=0, right=0;
+		int x_incr = width / (200*ratio);					//we use x_incr instead of x++ to skip pixels instead of scanning each one
+		int y_incr = Mathf.Max(1,height / 200);				//x_incr and y_incr values are larger for larger resolution images
+		int top=0, bottom=0, left=0, right=0;				//top, bottom, left, right hold the edge x and y values of the perimeter of the floor plan
 		int oldTop = 0, oldRight = 0;
-		bool[,] wallGrid = new bool [width, height];
+		bool[,] wallGrid = new bool [width, height];		//we use wallGrid and windowGrid to remember which x,y coordinates in the floor plan have an object placed there, we use this info to avoid collisions or make other decisions
 		bool[,] windowGrid = new bool [width, height];
 		Quaternion q = new Quaternion (0, 0, 0, 0);
 
-
+		//Nested loop to iterate through the entire image stored in www.texture
 		for (x = 0; x < width; x+=x_incr) {
-			Wall newWall = new Wall();
+			Wall newWall = new Wall();						//create a new Wall, we will set the wall's parameters when we detect a wall
 			newWall.x = 0;
 			newWall.startY = 0;
 			newWall.type = 0;
@@ -142,28 +141,24 @@ public class ImageReader : MonoBehaviour {
 			for (y = 0; y < height; y+=y_incr) {
 				Color32 c1 = scaledDown.GetPixel (x, y);
 
-				//if color is black, we found a wall
+				//if colour is black, we found a wall
 				if (Mathf.Abs (c1.r - black.r) <= 20) {
 					wallGrid [x, y] = true;
 
-					if(left == 0){
-						left = x;	//leftmost edge of the property, only set once
-					}
-					if (bottom == 0) {
+					if(left == 0)
+						left = x;							//leftmost edge of the property, only set once
+					if (bottom == 0) 
 						bottom = y;
-					}
-					right = x;		//rightmost edge, update every time, last value will be rightmost
+					
+					right = x;								//rightmost edge, update every time, last value will be rightmost
 					top = y;
 
-
-
-					if (newWall.startY == 0) {
+					if (newWall.startY == 0) {				//this is the beginning of a wall, since wall's startY has not been set yet
 						newWall.x = x;
 						newWall.startY = y;
 					}
 
-					//if we found a wall, need to close off the window
-					if (newWindow.startY != 0) {
+					if (newWindow.startY != 0) { 			//if we found a wall, need to close off the window, this is to avoid overlapping windows and walls
 						newWindow.x = x;
 						newWindow.endY = y;
 
@@ -174,28 +169,29 @@ public class ImageReader : MonoBehaviour {
 						newWindow.startY = 0;
 					}
 
-					if (y == height - 1) {	//reached the edge of the image, close off the wall
+					if (y == height - 1) {					//reached the edge of the image, close off the wall
 						newWall.x = x;
 						newWall.endY = y;
 
-						wallList [wallIndex] = newWall;
+						wallList [wallIndex] = newWall;		//we add the newly created wall to wallList array, we will later use this array to populate the scene with objects
 						wallIndex++;
 					}
-				//found a window
+
+				//else if colour is greyish, found a window
 				} else if (Mathf.Abs (c1.r - black.r) > 20 && Mathf.Abs (c1.r - black.r) <= 200) {
 
 					windowGrid [x, y] = true;
 
-					if (newWindow.startY == 0) {
+					if (newWindow.startY == 0) {			//this is the beginning of a window, since window's startY has not been set yet
 						newWindow.x = x;
 						newWindow.startY = y;
 					}
 
-					if (y == height - 1) {	//reached the edge of the image, close off the window
+					if (y == height - 1) {					//reached the edge of the image, close off the window
 						newWindow.x = x;
 						newWindow.endY = y;
 
-						wallList [wallIndex] = newWindow;
+						wallList [wallIndex] = newWindow;	//windows are also added to wallList, we can differentiate them from walls because type = 1
 						wallIndex++;
 					}
 				}
@@ -224,7 +220,7 @@ public class ImageReader : MonoBehaviour {
 				}
 					
 			}
-			if (oldTop == 0 || oldTop == top)		//after every y iteration, remember our top and right values, in case the floor plan is not a perfect rectangle
+			if (oldTop == 0 || oldTop == top)				//after every y iteration, remember our top and right values, in case the floor plan is not a perfect rectangle
 				oldTop = top;
 			if (oldRight == 0 || oldRight == right)
 				oldRight = right;
@@ -232,23 +228,39 @@ public class ImageReader : MonoBehaviour {
 		}
 			
 
-		//Place all the walls inside the scene by instantiating a wall for each wall in wallList
-		//One object is made for each wall, the length is adjusted based on the start and endpoints
+
+
+
+
+
+
+
+
+
+
+
+
+		//After scanning through the entire image, wallList now holds all detected objects
+		//Place all the detected objects inside the scene by instantiating a wall, window, door for each object in wallList
+		//The length is adjusted based on the start and endpoints
+
 		for (int i = 0; i < 10000; i++) {
 			if (wallList[i].startY != 0) {
 				int length = wallList [i].endY - wallList [i].startY;
 				int center = wallList [i].startY + length / 2;
-				Vector3 v = new Vector3 ((wallList [i].x - 170) * 0.3f, 3f, (center - 150) * 0.3f);
+				Vector3 v = new Vector3 ((wallList [i].x - 170) * 0.3f, 3f, (center - 150) * 0.3f);		//3D vector that holds the 3D position where we will place the new object
 				float lengthScale = Mathf.Max (1, length / 4);
+
 				if (wallList [i].type == 0) {
 
-					//print("Wall x = " + wallList[i].x + ", startY = " + wallList[i].startY + ", endY = " + wallList[i].endY);
-
+					//we want walls to be long and continuous, we want to ignore any walls that are randomly placed in the middle of a room, or are only 1 pixel long
+					//north, south, east, west checks if there are neighbouring walls, if there are, we should place a wall
 					bool north = wallGrid [wallList [i].x, Mathf.Min (height - 1, wallList [i].endY + 1)] || wallGrid [wallList [i].x, Mathf.Min (height - 1, wallList [i].endY + 2)];
 					bool south = wallGrid [wallList [i].x, Mathf.Max (0, wallList [i].startY - 1)] || wallGrid [wallList [i].x, Mathf.Max (0, wallList [i].startY - 2)];
 					bool east = wallGrid [Mathf.Min(width-1, wallList [i].x + 1), wallList [i].startY] && !wallGrid [Mathf.Min(width-1, wallList [i].x + 1), wallList [i].endY];
 					bool west = wallGrid [Mathf.Max(0, wallList [i].x - 1), wallList [i].startY] && !wallGrid [Mathf.Min(0, wallList [i].x - 1), wallList [i].endY];
 
+					//if either we have a neighbouring wall, or the length of the wall is greater than 1, the wall is valid. Otherwise we might have a incorrectly detected wall.
 					if (north || south || east || west || (length > 1)) {
 
 						GameObject newWall = (GameObject)Resources.Load ("Wall");
@@ -258,29 +270,33 @@ public class ImageReader : MonoBehaviour {
 						Instantiate (newWall, v, q);
 					}
 
-				} else if (wallList [i].type == 1) {
+				//if the wall's type is 1, we either have a window or a door
+				} else if (wallList [i].type == 1) {	
 					
 					bool rightEdge = Mathf.Abs (wallList [i].x - right) < 3 || Mathf.Abs (wallList [i].endY - oldRight) < 3;
 					bool leftEdge = Mathf.Abs (wallList [i].x - left) < 3;
 					bool topEdge = (Mathf.Abs (wallList [i].endY - top) < 3 || Mathf.Abs (wallList [i].endY - oldTop) < 3) && (wallList [i].endY - wallList [i].startY) < 3;
 					bool bottomEdge = (Mathf.Abs (wallList [i].endY - bottom) < 3) && (wallList [i].endY - wallList [i].startY) < 3;
 
-					if (rightEdge || leftEdge || topEdge || bottomEdge) {	//these objects are along the perimeter of the floorplan, they are windows
-						
+					//if any of the 4 bools are true, it means the detected object lies on the perimeter of the floor plan
+					//we assume that all the windows are along the perimeter
+					if (rightEdge || leftEdge || topEdge || bottomEdge) {	
 						
 						bool north = !wallGrid [wallList [i].x, Mathf.Min (height - 1, wallList [i].endY + 1)] && !wallGrid [wallList [i].x, Mathf.Min (height - 1, wallList [i].endY + 2)];
 						bool south = !wallGrid [wallList [i].x, Mathf.Max (0, wallList [i].startY - 1)] && !wallGrid [wallList [i].x, Mathf.Max (0, wallList [i].startY - 2)];
 						bool east = !wallGrid [Mathf.Min (width - 1, wallList [i].x + 1), wallList [i].startY] && !wallGrid [Mathf.Min (width - 1, wallList [i].x + 1), wallList [i].endY];
 						bool west = !wallGrid [Mathf.Max (0, wallList [i].x - 1), wallList [i].startY] && !wallGrid [Mathf.Min (0, wallList [i].x - 1), wallList [i].endY];
 
-						if (north && south && east && west) {	//get the surrounding neighbours to make sure we aren't overlapping walls
+						//get the surrounding neighbours to make sure we aren't overlapping walls
+						if (north && south && east && west) {	
 
 							GameObject newWindow = (GameObject)Resources.Load ("Window");
 							newWindow.transform.localScale = new Vector3 (1f, 6f, lengthScale);
-							//print("Window1 x = " + wallList[i].x + ", startY = " + wallList[i].startY + ", endY = " + wallList[i].endY);
 							Instantiate (newWindow, v, q);
+
 						} else {
-							while (wallList [i].startY < wallList [i].endY) {	//if we are overlapping neighbour walls, decrease our length until we are not
+							//if we are overlapping neighbour walls, decrease our length until we are not
+							while (wallList [i].startY < wallList [i].endY) {	
 								wallList [i].startY++;
 								wallList [i].endY--;
 								north = !wallGrid [wallList [i].x, Mathf.Min (height - 1, wallList [i].endY + 1)];
@@ -288,6 +304,7 @@ public class ImageReader : MonoBehaviour {
 								east = !wallGrid [Mathf.Min (width - 1, wallList [i].x + 1), wallList [i].startY];
 								west = !wallGrid [Mathf.Max (0, wallList [i].x - 1), wallList [i].startY];
 
+								//check neighbours again after decreasing length
 								if (north && south && east && west) {
 									length = wallList [i].endY - wallList [i].startY;
 									if (length <= 1)
@@ -295,8 +312,6 @@ public class ImageReader : MonoBehaviour {
 									center = wallList [i].startY + length / 2;
 									v = new Vector3 ((wallList [i].x - 170) * 0.3f, 3f, (center - 150) * 0.3f);
 									lengthScale = Mathf.Max (1, length / 4);
-
-									//print("Window2 x = " + wallList[i].x + ", startY = " + wallList[i].startY + ", endY = " + wallList[i].endY);
 
 									GameObject newWindow = (GameObject)Resources.Load ("Window");
 									newWindow.transform.localScale = new Vector3 (1f, 6f, lengthScale);
@@ -306,15 +321,18 @@ public class ImageReader : MonoBehaviour {
 							}
 
 						}
-					} else {	//if not windows, then doors, probably needs fixing 
+					} else {	//if the detected object is not on the perimter, and is not a wall, we treat it as a door
+								//doors are detected using a diagonal line, therefore we get NE, SE, NW and SW to detect the presence of a diagonal
+								//each boolean value is only true if the diagonal is at least 3 pixels long
 						
 						bool northeast = windowGrid [Mathf.Min(width-1, wallList [i].x + 1), Mathf.Min (height - 1, wallList [i].endY + 1)] && windowGrid [Mathf.Min(width-1, wallList [i].x + 2), Mathf.Min (height - 1, wallList [i].endY + 2)] && windowGrid [Mathf.Min(width-1, wallList [i].x + 3), Mathf.Min (height - 1, wallList [i].endY + 3)];
 						bool southeast = windowGrid [Mathf.Min(width-1, wallList [i].x + 1), Mathf.Max (0, wallList [i].startY - 1)] && windowGrid [Mathf.Min(width-1, wallList [i].x + 2), Mathf.Max (0, wallList [i].startY - 2)] && windowGrid [Mathf.Min(width-1, wallList [i].x + 3), Mathf.Max (0, wallList [i].startY - 3)];
 						bool northwest = windowGrid [Mathf.Max(0, wallList [i].x - 1), Mathf.Min (height - 1, wallList [i].endY + 1)] && windowGrid [Mathf.Max(0, wallList [i].x - 2), Mathf.Min (height - 1, wallList [i].endY + 2)] && windowGrid [Mathf.Max(0, wallList [i].x - 3), Mathf.Min (height - 1, wallList [i].endY + 3)];
 						bool southwest = windowGrid [Mathf.Max(0, wallList [i].x - 1), Mathf.Max (0, wallList [i].startY - 1)] && windowGrid [Mathf.Max(0, wallList [i].x - 2), Mathf.Max (0, wallList [i].startY - 2)] && windowGrid [Mathf.Max(0, wallList [i].x - 3), Mathf.Max (0, wallList [i].startY - 3)];
 
-						if (northeast || southeast || northwest || southwest) {		//detect doors by a diagonal line
-
+						if (northeast || southeast || northwest || southwest) {
+							//once we have detected a door, we need to solve the problem where we detect another diagonal on the same diagonal line
+							//we need to set windowGrid to false in the surrounding area to prevent any duplicate doors
 							for (int m = wallList [i].x - 10; m < wallList [i].x + 10; m++) {
 								for (int n = wallList [i].startY - 10; n < wallList [i].endY + 10; n++) {
 									if (m >= 0 && m < width && n >= 0 && n < height)
