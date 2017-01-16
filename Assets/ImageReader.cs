@@ -7,6 +7,7 @@ public class ImageReader : MonoBehaviour {
 	//http://www.colebrook.net/wp-content/uploads/2012/08/RG-3-bdrm-with-balcony.jpg
 	//http://www.roomsketcher.com/wp-content/uploads/2014/08/RoomSketcher-2D-Floor-Plan-1.jpg
 	//http://www.roomsketcher.com/wp-content/uploads/2015/11/RoomSketcher-House-Floor-Plans-962270.jpg
+	//http://headstartonahome.ca/pub/image/floor_plans/TheCayman/Perehudoff-Condo%20Unit%20112_1071sqft_2bed2bath%20(1000x815).jpg
 
 
 
@@ -271,6 +272,14 @@ public class ImageReader : MonoBehaviour {
 
 
 						Instantiate (newWall, v, q);
+					} else {
+						//if we do not place a wall, we need to set the wallGrid values to false
+						for (int m = wallList [i].startY - 5; m < wallList [i].endY + 5; m++)
+							for (int n = wallList [i].x - 10; n < wallList [i].x + 10; n++) {
+								if (n < width && m < height)
+									wallGrid [n, m] = false;
+							}
+
 					}
 
 					//if the wall's type is 1, we either have a window or a door
@@ -336,17 +345,32 @@ public class ImageReader : MonoBehaviour {
 						if (northeast || southeast || northwest || southwest) {
 							//once we have detected a door, we need to solve the problem where we detect another diagonal on the same diagonal line
 							//we need to set windowGrid to false in the surrounding area to prevent any duplicate doors
-							for (int m = wallList [i].x - 10; m < wallList [i].x + 10; m++) {
-								for (int n = wallList [i].startY - 10; n < wallList [i].endY + 10; n++) {
+							int m = 0, n = 0;
+							for (m = wallList [i].x - 10; m < wallList [i].x + 10; m++) {
+								for (n = wallList [i].startY - 10; n < wallList [i].endY + 10; n++) {
 									if (m >= 0 && m < width && n >= 0 && n < height)
 										windowGrid [m, n] = false;
 								}
 							}
 
-							v = new Vector3 ((wallList [i].x - 170) * 0.3f, 0f, (center - 150) * 0.3f);
-							GameObject newWindow = (GameObject)Resources.Load ("Door");
-							newWindow.transform.localScale = new Vector3 (0.2f, 0.2f, 0.2f);
-							Instantiate (newWindow, v, q);
+							//want to place the door adjacent to a wall
+							//search surrounding area for any presence of a wall
+							bool foundWall = false;
+							for (m = Mathf.Max(0,wallList [i].x - 10); m < wallList [i].x + 10 && m < width && foundWall == false; m++) {
+								for (n = Mathf.Max(0,wallList [i].startY) - 10; n < wallList [i].endY + 10 && n < height && foundWall == false; n++) {
+									if (wallGrid [m, n]) 
+										foundWall = true;
+								}
+							}
+
+							//v = new Vector3 ((wallList [i].x - 170) * 0.3f, 0f, (center - 150) * 0.3f);
+							if (foundWall) {
+
+								v = new Vector3 ((m - 170) * 0.3f, 0f, (n - 150) * 0.3f);
+								GameObject newWindow = (GameObject)Resources.Load ("Door");
+								newWindow.transform.localScale = new Vector3 (0.2f, 0.2f, 0.2f);
+								Instantiate (newWindow, v, q);
+							}
 						}
 
 
