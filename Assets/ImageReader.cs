@@ -11,7 +11,7 @@ public class ImageReader : MonoBehaviour {
 
 
 
-	string path;	//URL path to the floor plan image
+	string path;		//URL path to the floor plan image
 	WWW www;
 	Color32 black = new Color32(10,10,10,1);
 	Color32[] pixels;
@@ -30,9 +30,11 @@ public class ImageReader : MonoBehaviour {
 	Wall[] wallList = new Wall[10000];	//Array that holds all detected elements in the floor plan 
 
 
+
+
 	// Use this for initialization
 	void Start () {
-
+		
 		//Get the latest copied text from the clipboard and use it as the path URL
 		//Have to use different code for Android and for the Unity Editor
 		#if UNITY_ANDROID && !UNITY_EDITOR
@@ -85,6 +87,7 @@ public class ImageReader : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	}
+		
 
 
 
@@ -94,7 +97,7 @@ public class ImageReader : MonoBehaviour {
 	 */
 	IEnumerator loadImage(){
 		www = new WWW (path);
-		while (www.isDone == false) {
+		while (!www.isDone) {
 			//wait for image to finish downloading
 		}
 
@@ -365,7 +368,6 @@ public class ImageReader : MonoBehaviour {
 
 							//v = new Vector3 ((wallList [i].x - 170) * 0.3f, 0f, (center - 150) * 0.3f);
 							if (foundWall) {
-
 								v = new Vector3 ((m - 170) * 0.3f, 0f, (n - 150) * 0.3f);
 								GameObject newWindow = (GameObject)Resources.Load ("Door");
 								newWindow.transform.localScale = new Vector3 (0.2f, 0.2f, 0.2f);

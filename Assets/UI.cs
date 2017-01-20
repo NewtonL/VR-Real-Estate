@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class UI : MonoBehaviour {
@@ -10,7 +11,8 @@ public class UI : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		this.transform.GetChild (0).gameObject.SetActive (false);
+		if(SceneManager.GetActiveScene().name == "gearVR")
+			this.transform.GetChild (0).gameObject.SetActive (false);
 
 
 	}
@@ -45,5 +47,9 @@ public class UI : MonoBehaviour {
 			wall.GetComponent<Renderer> ().material.color = Color.red;
 		}
 
+	}
+
+	public void StartButton(){
+		SceneManager.LoadScene ("gearVR");
 	}
 }
