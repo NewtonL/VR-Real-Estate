@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class ImageReader : MonoBehaviour {
@@ -18,7 +19,6 @@ public class ImageReader : MonoBehaviour {
 	Texture2D scaledDown;
 	int wallIndex = 0;
 
-
 	struct Wall		//basic element that we will detect from the floor plan, can be wall, window, or door
 	{
 		public int x;
@@ -30,11 +30,7 @@ public class ImageReader : MonoBehaviour {
 	Wall[] wallList = new Wall[10000];	//Array that holds all detected elements in the floor plan 
 
 
-
-
-	// Use this for initialization
-	void Start () {
-		
+	public void pasteFromClipboard(){
 		//Get the latest copied text from the clipboard and use it as the path URL
 		//Have to use different code for Android and for the Unity Editor
 		#if UNITY_ANDROID && !UNITY_EDITOR
@@ -52,6 +48,28 @@ public class ImageReader : MonoBehaviour {
 		path = GUIUtility.systemCopyBuffer;
 		#endif
 
+		PlayerPrefs.SetString ("path", path);
+		SceneManager.LoadScene ("gearVR");
+	}
+
+	public void demo1(){
+		PlayerPrefs.SetString ("path", "http://www.roomsketcher.com/wp-content/uploads/2014/08/RoomSketcher-2D-Floor-Plan-1.jpg");
+		SceneManager.LoadScene ("gearVR");
+	}
+
+	public void demo2(){
+		PlayerPrefs.SetString ("path", "http://www.roomsketcher.com/wp-content/uploads/2015/11/RoomSketcher-House-Floor-Plans-962270.jpg");
+		SceneManager.LoadScene ("gearVR");
+	}
+		
+
+
+	// Use this for initialization
+	void Start () {
+		if (SceneManager.GetActiveScene ().name != "gearVR")
+			return;
+
+		path = PlayerPrefs.GetString ("path");
 
 		//Calls function loadImage and waits until it finishes downloading the image
 		StartCoroutine ("loadImage");

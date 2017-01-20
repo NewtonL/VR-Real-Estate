@@ -20,7 +20,7 @@ public class UI : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if (Input.GetKeyDown ("escape")) {	//use ESC key to hide or show menu
+		if (Input.GetKeyDown ("m")) {	//use ESC key to hide or show menu
 			this.transform.GetChild (0).gameObject.SetActive (showUI);
 			showUI = !showUI;
 		}
