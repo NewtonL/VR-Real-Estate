@@ -30,6 +30,10 @@ public class ImageReader : MonoBehaviour {
 	Wall[] wallList = new Wall[10000];	//Array that holds all detected elements in the floor plan 
 
 
+	/*
+	 * pasteFromClipboard() is called when a button is pressed on the welcome screen.
+	 * The latest copied text is fetched from the clipboard and stored in PlayerPrefs
+	 */
 	public void pasteFromClipboard(){
 		//Get the latest copied text from the clipboard and use it as the path URL
 		//Have to use different code for Android and for the Unity Editor
@@ -48,15 +52,25 @@ public class ImageReader : MonoBehaviour {
 		path = GUIUtility.systemCopyBuffer;
 		#endif
 
-		PlayerPrefs.SetString ("path", path);
-		SceneManager.LoadScene ("gearVR");
+		PlayerPrefs.SetString ("path", path);	//saves the path URL in PlayerPrefs. We must do this otherwise the path will be lost when we switch scenes
+		SceneManager.LoadScene ("gearVR");		//load the main floor plan scene
 	}
 
+
+	/*
+	 * Called from demo1 button on the welcome screen
+	 * Hard codes URL to PlayerPrefs
+	 */
 	public void demo1(){
 		PlayerPrefs.SetString ("path", "http://www.roomsketcher.com/wp-content/uploads/2014/08/RoomSketcher-2D-Floor-Plan-1.jpg");
 		SceneManager.LoadScene ("gearVR");
 	}
 
+
+	/*
+	 * Called from demo2 button on the welcome screen
+	 * Hard codes URL to PlayerPrefs
+	 */
 	public void demo2(){
 		PlayerPrefs.SetString ("path", "http://www.roomsketcher.com/wp-content/uploads/2015/11/RoomSketcher-House-Floor-Plans-962270.jpg");
 		SceneManager.LoadScene ("gearVR");
@@ -313,12 +327,14 @@ public class ImageReader : MonoBehaviour {
 
 					//if any of the 4 bools are true, it means the detected object lies on the perimeter of the floor plan
 					//we assume that all the windows are along the perimeter
-					if (rightEdge || leftEdge || topEdge || bottomEdge) {	
+					if ((rightEdge || leftEdge || topEdge || bottomEdge) && wallList[i].x >=left && wallList[i].startY >= bottom) {	
 
 						bool north = !wallGrid [wallList [i].x, Mathf.Min (height - 1, wallList [i].endY + 1)] && !wallGrid [wallList [i].x, Mathf.Min (height - 1, wallList [i].endY + 2)];
 						bool south = !wallGrid [wallList [i].x, Mathf.Max (0, wallList [i].startY - 1)] && !wallGrid [wallList [i].x, Mathf.Max (0, wallList [i].startY - 2)];
 						bool east = !wallGrid [Mathf.Min (width - 1, wallList [i].x + 1), wallList [i].startY] && !wallGrid [Mathf.Min (width - 1, wallList [i].x + 1), wallList [i].endY];
 						bool west = !wallGrid [Mathf.Max (0, wallList [i].x - 1), wallList [i].startY] && !wallGrid [Mathf.Min (0, wallList [i].x - 1), wallList [i].endY];
+
+
 
 						//get the surrounding neighbours to make sure we aren't overlapping walls
 						if (north && south && east && west) {	
@@ -354,7 +370,7 @@ public class ImageReader : MonoBehaviour {
 							}
 
 						}
-					} else {	//if the detected object is not on the perimter, and is not a wall, we treat it as a door
+					} else {	//if the detected object is not on the perimeter, and is not a wall, we treat it as a door
 						//doors are detected using a diagonal line, therefore we get NE, SE, NW and SW to detect the presence of a diagonal
 						//each boolean value is only true if the diagonal is at least 3 pixels long
 
@@ -377,10 +393,13 @@ public class ImageReader : MonoBehaviour {
 							//want to place the door adjacent to a wall
 							//search surrounding area for any presence of a wall
 							bool foundWall = false;
-							for (m = Mathf.Max(0,wallList [i].x - 10); m < wallList [i].x + 10 && m < width && foundWall == false; m++) {
-								for (n = Mathf.Max(0,wallList [i].startY) - 10; n < wallList [i].endY + 10 && n < height && foundWall == false; n++) {
-									if (wallGrid [m, n]) 
+							for (m = Mathf.Max(0,wallList [i].x - 20); m < wallList [i].x + 20 && m < width && foundWall == false; m++) {
+								for (n = Mathf.Max(0,wallList [i].startY - 20); n < wallList [i].endY + 20 && n < height && foundWall == false; n++) {
+									if (wallGrid [m, n]) {
+										m += 5;
+										n += 1;
 										foundWall = true;
+									}
 								}
 							}
 
