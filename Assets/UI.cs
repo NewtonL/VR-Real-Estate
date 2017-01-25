@@ -30,7 +30,7 @@ public class UI : MonoBehaviour {
 		}
 	}
 
-	public void Button1(){
+	public void AddWall(){
 		if (placing == false) {
 			Vector3 v = Camera.main.transform.position + Camera.main.transform.forward * 10;	//position in front of the camera's view
 			Quaternion q = new Quaternion (0, 0, 0, 0);
@@ -41,12 +41,17 @@ public class UI : MonoBehaviour {
 		}
 	}
 
-	public void Button2(){
+	public void RedColour(){
 		GameObject[] walls = GameObject.FindGameObjectsWithTag ("Wall");
 		foreach (GameObject wall in walls) {
 			wall.GetComponent<Renderer> ().material.color = Color.red;
 		}
 
+	}
+
+
+	public void Back(){
+		SceneManager.LoadScene ("Welcome");
 	}
 
 	public void StartButton(){
