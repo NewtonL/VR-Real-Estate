@@ -288,7 +288,7 @@ public class ImageReader : MonoBehaviour {
 				int length = wallList [i].endY - wallList [i].startY;
 				int center = wallList [i].startY + length / 2;
 				Vector3 v = new Vector3 ((wallList [i].x - 170) * 0.3f, 3f, (center - 150) * 0.3f);		//3D vector that holds the 3D position where we will place the new object
-				float lengthScale = Mathf.Max (1, length / 4);
+				float lengthScale = Mathf.Max (1, length / 3.5f);
 
 				if (wallList [i].type == 0) {
 
@@ -319,6 +319,7 @@ public class ImageReader : MonoBehaviour {
 
 					//if the wall's type is 1, we either have a window or a door
 				} else if (wallList [i].type == 1) {	
+
 
 					bool rightEdge = Mathf.Abs (wallList [i].x - right) < 3 || Mathf.Abs (wallList [i].endY - oldRight) < 3;
 					bool leftEdge = Mathf.Abs (wallList [i].x - left) < 3;
@@ -403,13 +404,13 @@ public class ImageReader : MonoBehaviour {
 								}
 							}
 
-							//v = new Vector3 ((wallList [i].x - 170) * 0.3f, 0f, (center - 150) * 0.3f);
+							v = new Vector3 ((wallList [i].x - 170) * 0.3f, 0f, (center - 150) * 0.3f);/*
 							if (foundWall) {
 								v = new Vector3 ((m - 170) * 0.3f, 0f, (n - 150) * 0.3f);
 								GameObject newWindow = (GameObject)Resources.Load ("Door");
 								newWindow.transform.localScale = new Vector3 (0.2f, 0.2f, 0.2f);
 								Instantiate (newWindow, v, q);
-							}
+							}*/
 						}
 
 
