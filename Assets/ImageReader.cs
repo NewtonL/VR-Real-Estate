@@ -296,8 +296,8 @@ public class ImageReader : MonoBehaviour {
 					//north, south, east, west checks if there are neighbouring walls, if there are, we should place a wall
 					bool north = wallGrid [wallList [i].x, Mathf.Min (height - 1, wallList [i].endY + 1)];// || wallGrid [wallList [i].x, Mathf.Min (height - 1, wallList [i].endY + 2)];
 					bool south = wallGrid [wallList [i].x, Mathf.Max (0, wallList [i].startY - 1)];// || wallGrid [wallList [i].x, Mathf.Max (0, wallList [i].startY - 2)];
-					bool east = wallGrid [Mathf.Min(width-1, wallList [i].x + 1), wallList [i].startY] && !wallGrid [Mathf.Min(width-1, wallList [i].x + 1), wallList [i].endY];
-					bool west = wallGrid [Mathf.Max(0, wallList [i].x - 1), wallList [i].startY] && !wallGrid [Mathf.Min(0, wallList [i].x - 1), wallList [i].endY];
+					bool east = wallGrid [Mathf.Min(width-1, wallList [i].x + 1), wallList [i].startY] || wallGrid [Mathf.Min(width-1, wallList [i].x + 1), wallList [i].endY];
+					bool west = wallGrid [Mathf.Max(0, wallList [i].x - 1), wallList [i].startY] || wallGrid [Mathf.Min(0, wallList [i].x - 1), wallList [i].endY];
 
 					//if either we have a neighbouring wall, or the length of the wall is greater than 1, the wall is valid. Otherwise we might have a incorrectly detected wall.
 					if (north || south || east || west || (length > 3)) {
@@ -309,11 +309,12 @@ public class ImageReader : MonoBehaviour {
 						Instantiate (newWall, v, q);
 					} else {
 						//if we do not place a wall, we need to set the wallGrid values to false
-						for (int m = wallList [i].startY - 5; m < wallList [i].endY + 5; m++)
-							for (int n = wallList [i].x - 10; n < wallList [i].x + 10; n++) {
+						for (int m = wallList [i].startY; m < wallList [i].endY; m++)
+							wallGrid [wallList [i].x, m] = false;
+							/*for (int n = wallList [i].x - 10; n < wallList [i].x + 10; n++) {
 								if (n < width && m < height)
 									wallGrid [n, m] = false;
-							}
+							}*/
 
 					}
 
@@ -329,22 +330,26 @@ public class ImageReader : MonoBehaviour {
 					//if any of the 4 bools are true, it means the detected object lies on the perimeter of the floor plan
 					//we assume that all the windows are along the perimeter
 					if ((rightEdge || leftEdge || topEdge || bottomEdge) && wallList[i].x >=left && wallList[i].startY >= bottom) {	
-
+						/*
 						bool north = !wallGrid [wallList [i].x, Mathf.Min (height - 1, wallList [i].endY + 1)] && !wallGrid [wallList [i].x, Mathf.Min (height - 1, wallList [i].endY + 2)];
 						bool south = !wallGrid [wallList [i].x, Mathf.Max (0, wallList [i].startY - 1)] && !wallGrid [wallList [i].x, Mathf.Max (0, wallList [i].startY - 2)];
 						bool east = !wallGrid [Mathf.Min (width - 1, wallList [i].x + 1), wallList [i].startY] && !wallGrid [Mathf.Min (width - 1, wallList [i].x + 1), wallList [i].endY];
 						bool west = !wallGrid [Mathf.Max (0, wallList [i].x - 1), wallList [i].startY] && !wallGrid [Mathf.Min (0, wallList [i].x - 1), wallList [i].endY];
+						*/
 
-
+						bool north = windowGrid [wallList [i].x, Mathf.Min (height - 1, wallList [i].endY + 1)];
+						bool south = windowGrid [wallList [i].x, Mathf.Max (0, wallList [i].startY - 1)];
+						bool east = windowGrid [Mathf.Min (width - 1, wallList [i].x + 1), wallList [i].startY] || windowGrid [Mathf.Min (width - 1, wallList [i].x + 1), wallList [i].endY];
+						bool west = windowGrid [Mathf.Max (0, wallList [i].x - 1), wallList [i].startY] || windowGrid [Mathf.Min (0, wallList [i].x - 1), wallList [i].endY];
 
 						//get the surrounding neighbours to make sure we aren't overlapping walls
-						if (north && south && east && west) {	
-
+						if (north || south || east || west || (length>3)) {	
+							//print ("Window length: " + length + ", x: "+wallList[i].x+", y: "+wallList[i].endY+", north: " + north + ", south: " + south + ", east: " + east + ", west: " + west);
 							GameObject newWindow = (GameObject)Resources.Load ("Window");
 							newWindow.transform.localScale = new Vector3 (1f, 6f, lengthScale);
 							Instantiate (newWindow, v, q);
 
-						} else {
+						} /*else {
 							//if we are overlapping neighbour walls, decrease our length until we are not
 							while (wallList [i].startY < wallList [i].endY) {	
 								wallList [i].startY++;
@@ -370,7 +375,7 @@ public class ImageReader : MonoBehaviour {
 								}
 							}
 
-						}
+						}*/
 					} else {	//if the detected object is not on the perimeter, and is not a wall, we treat it as a door
 						//doors are detected using a diagonal line, therefore we get NE, SE, NW and SW to detect the presence of a diagonal
 						//each boolean value is only true if the diagonal is at least 3 pixels long
@@ -403,14 +408,25 @@ public class ImageReader : MonoBehaviour {
 									}
 								}
 							}
-
-							v = new Vector3 ((wallList [i].x - 170) * 0.3f, 0f, (center - 150) * 0.3f);/*
+								
 							if (foundWall) {
-								v = new Vector3 ((m - 170) * 0.3f, 0f, (n - 150) * 0.3f);
+								v = new Vector3 ((m - 170) * 0.3f, 5f, (n - 150) * 0.3f);
 								GameObject newWindow = (GameObject)Resources.Load ("Door");
 								newWindow.transform.localScale = new Vector3 (0.2f, 0.2f, 0.2f);
 								Instantiate (newWindow, v, q);
-							}*/
+							}
+
+						}
+						else {
+							//if we do not place a wall, we need to set the wallGrid values to false
+							for (int m = wallList [i].startY-4; m < wallList [i].endY+4; m++) {
+								//windowGrid [wallList [i].x, m] = false;
+								for (int n = wallList [i].x - 5; n < wallList [i].x + 5; n++) {
+									if (n < width && m < height && n > 0 && m > 0)
+										windowGrid [n, m] = false;
+								}
+							}
+
 						}
 
 
