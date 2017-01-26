@@ -75,7 +75,7 @@ public class ImageReader : MonoBehaviour {
 		PlayerPrefs.SetString ("path", "http://www.roomsketcher.com/wp-content/uploads/2015/11/RoomSketcher-House-Floor-Plans-962270.jpg");
 		SceneManager.LoadScene ("gearVR");
 	}
-		
+
 
 
 	// Use this for initialization
@@ -119,7 +119,7 @@ public class ImageReader : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 	}
-		
+
 
 
 
@@ -311,7 +311,7 @@ public class ImageReader : MonoBehaviour {
 						//if we do not place a wall, we need to set the wallGrid values to false
 						for (int m = wallList [i].startY; m < wallList [i].endY; m++)
 							wallGrid [wallList [i].x, m] = false;
-							/*for (int n = wallList [i].x - 10; n < wallList [i].x + 10; n++) {
+						/*for (int n = wallList [i].x - 10; n < wallList [i].x + 10; n++) {
 								if (n < width && m < height)
 									wallGrid [n, m] = false;
 							}*/
@@ -408,7 +408,7 @@ public class ImageReader : MonoBehaviour {
 									}
 								}
 							}
-								
+
 							if (foundWall) {
 								v = new Vector3 ((m - 170) * 0.3f, 5f, (n - 150) * 0.3f);
 								GameObject newWindow = (GameObject)Resources.Load ("Door");
