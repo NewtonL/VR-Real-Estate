@@ -26,15 +26,14 @@ public class UI : MonoBehaviour {
 		}
 
 		if (placing) {
-			newObj.transform.position = Camera.main.transform.position + Camera.main.transform.forward * 10;
+			newObj.transform.position = Camera.main.transform.position - new Vector3(0, 2.5f, 0) + Camera.main.transform.forward * 10;
 		}
 	}
 
 	public void AddWall(){
 		if (placing == false) {
 			Vector3 v = Camera.main.transform.position + Camera.main.transform.forward * 10;	//position in front of the camera's view
-			Quaternion q = new Quaternion (0, 0, 0, 0);
-			newObj = (GameObject)Instantiate (Resources.Load ("Wall"), v, q);
+			newObj = (GameObject)Instantiate (Resources.Load ("Toilet"), v, Quaternion.Euler(0,270,0));
 			placing = true;
 		} else if (placing == true) {
 			placing = false;

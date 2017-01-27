@@ -76,6 +76,16 @@ public class ImageReader : MonoBehaviour {
 		SceneManager.LoadScene ("gearVR");
 	}
 
+	/*
+	 * Called from demo3 button on the welcome screen
+	 * Enables the demo scene used in the prototype
+	 */
+	public void demo3(){
+		PlayerPrefs.SetString ("path", "demo");
+		SceneManager.LoadScene ("gearVR");
+	}
+
+
 
 
 	// Use this for initialization
@@ -85,34 +95,41 @@ public class ImageReader : MonoBehaviour {
 
 		path = PlayerPrefs.GetString ("path");
 
-		//Calls function loadImage and waits until it finishes downloading the image
-		StartCoroutine ("loadImage");
+		if (path != "demo") {
 
-		//If the width of the image is over 500, we scale down the image using the TextureScale script
-		if (www.texture.width >= 500) {
-			float scale = www.texture.width / 300f;
-			int newWidth = 300;
-			float newHeight = www.texture.height / scale;
+			//Calls function loadImage and waits until it finishes downloading the image
+			StartCoroutine ("loadImage");
+
+			//If the width of the image is over 500, we scale down the image using the TextureScale script
+			if (www.texture.width >= 500) {
+				float scale = www.texture.width / 300f;
+				int newWidth = 300;
+				float newHeight = www.texture.height / scale;
 
 
-			scaledDown = Instantiate (www.texture);
-			TextureScale.Bilinear (scaledDown, newWidth, (int) newHeight);
+				scaledDown = Instantiate (www.texture);
+				TextureScale.Bilinear (scaledDown, newWidth, (int)newHeight);
+			} else
+				scaledDown = Instantiate (www.texture);
+
+
+			//Scale ground and roof planes according to image size
+			GameObject ground = GameObject.Find ("Ground");
+			ground.transform.localScale = new Vector3 (10f, 1f, scaledDown.height * 0.035f);
+
+			GameObject roof = GameObject.Find ("Roof");
+			roof.transform.localScale = new Vector3 (10f, 1f, scaledDown.height * 0.035f);
+
+
+			//Calls the function Build and runs it in the background so the main application isn't blocked
+			StartCoroutine ("Build");
+		} else {
+			GameObject demoScene = GameObject.Find ("DemoScene");
+			demoScene.transform.GetChild (0).gameObject.SetActive (true);
+
+			GameObject roof = GameObject.Find ("Roof");
+			roof.transform.position = new Vector3(roof.transform.position.x, 7f, roof.transform.position.z);
 		}
-		else
-			scaledDown = Instantiate (www.texture);
-
-
-		//Scale ground and roof planes according to image size
-		GameObject ground = GameObject.Find ("Ground");
-		ground.transform.localScale = new Vector3 (10f, 1f, scaledDown.height * 0.035f);
-
-		GameObject roof = GameObject.Find ("Roof");
-		roof.transform.localScale = new Vector3 (10f, 1f, scaledDown.height * 0.035f);
-
-
-		//Calls the function Build and runs it in the background so the main application isn't blocked
-		StartCoroutine ("Build");
-
 
 	}
 
