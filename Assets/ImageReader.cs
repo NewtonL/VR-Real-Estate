@@ -96,6 +96,9 @@ public class ImageReader : MonoBehaviour {
 		path = PlayerPrefs.GetString ("path");
 
 		if (path != "demo") {
+			GameObject demoScene = GameObject.Find ("DemoScene");
+			demoScene.transform.GetChild (0).gameObject.SetActive (false);
+
 
 			//Calls function loadImage and waits until it finishes downloading the image
 			StartCoroutine ("loadImage");
@@ -451,6 +454,10 @@ public class ImageReader : MonoBehaviour {
 				} 
 			}
 		}
+
+
+
+
 	}
 
 
