@@ -458,6 +458,27 @@ public class ImageReader : MonoBehaviour {
 
 
 
+
+		//place furniture
+		int frequency = 0;
+		for (x = left; x >= left && (x < right || x < oldRight); x += x_incr * 10) {
+			for (y = bottom; y >= bottom && (y < top || y < oldTop); y += y_incr * 10) {
+				Collider[] col = Physics.OverlapSphere (new Vector3 ((x - 170) * 0.3f, 5f, (y - 150) * 0.3f), 5f);
+				if (col.Length == 0) {
+					frequency += 1;
+					if (frequency >= 10) {
+						frequency = 0;
+						int rand = Random.Range (0, 5);
+						if (rand < 3) {
+							GameObject newFurniture = (GameObject)Resources.Load ("sofa");
+							Instantiate (newFurniture, new Vector3 ((x - 170) * 0.3f, 0f, (y - 150) * 0.3f), new Quaternion (0, 0, 0, 0));
+						}
+					}
+				}
+			}
+		}
+
+
 	}
 
 
