@@ -2,12 +2,15 @@
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEngine.EventSystems;
 
 public class UI : MonoBehaviour {
 	
 	bool showUI = true;
 	GameObject newObj;
 	bool placing = false;
+	float red, green, blue;
+	GameObject[] walls;
 
 	// Use this for initialization
 	void Start () {
@@ -22,6 +25,8 @@ public class UI : MonoBehaviour {
 
 		if (Input.GetKeyDown ("m")) {	//use ESC key to hide or show menu
 			this.transform.GetChild (0).gameObject.SetActive (showUI);
+			if(showUI)
+				EventSystem.current.SetSelectedGameObject (GameObject.FindGameObjectWithTag("Menu"));
 			showUI = !showUI;
 		}
 
@@ -40,11 +45,11 @@ public class UI : MonoBehaviour {
 		}
 	}
 
-	public void RedColour(){
-		GameObject[] walls = GameObject.FindGameObjectsWithTag ("Wall");
-		foreach (GameObject wall in walls) {
-			wall.GetComponent<Renderer> ().material.color = Color.red;
-		}
+	public void ChangeWallColour(){
+		showUI = !showUI;
+		EventSystem.current.SetSelectedGameObject (GameObject.FindGameObjectWithTag("Slider"));
+		walls = GameObject.FindGameObjectsWithTag ("Wall");
+
 
 	}
 
@@ -55,5 +60,24 @@ public class UI : MonoBehaviour {
 
 	public void StartButton(){
 		SceneManager.LoadScene ("gearVR");
+	}
+
+	public void GetSliderValue(Slider s){
+		Color c1, c2;
+		if (s.value <= 100f) {
+			c1 = Color.red;
+			c2 = Color.blue;
+		}
+		else if (s.value <= 200f) {
+			c1 = Color.blue;
+			c2 = Color.green;
+		}
+		else {
+			c1 = Color.green;
+			c2 = Color.red;
+		}
+		foreach (GameObject wall in walls) {
+			wall.GetComponent<Renderer> ().material.color = Color.Lerp(c1, c2, s.value/300f);
+		}
 	}
 }
