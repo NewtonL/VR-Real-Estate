@@ -37,6 +37,9 @@ public class UI : MonoBehaviour {
 	}
 
 	public void AddWall(){
+		showUI = !showUI;
+		EventSystem.current.SetSelectedGameObject (GameObject.Find("Rotate"));
+
 		if (placing == false) {
 			Vector3 v = Camera.main.transform.position + Camera.main.transform.forward * 10;	//position in front of the camera's view
 			newObj = (GameObject)Instantiate (Resources.Load ("Toilet"), v, Quaternion.Euler(0,270,0));
@@ -44,6 +47,10 @@ public class UI : MonoBehaviour {
 		} else if (placing == true) {
 			placing = false;
 		}
+	}
+
+	public void RotateObject(){
+		newObj.transform.Rotate (0f, 45f, 0f);
 	}
 
 	public void ChangeWallColour(){
