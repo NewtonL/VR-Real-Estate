@@ -11,6 +11,7 @@ public class UI : MonoBehaviour {
 	bool placing = false;
 	float red, green, blue;
 	GameObject[] walls;
+	GameObject lightObject;
 
 	// Use this for initialization
 	void Start () {
@@ -49,8 +50,12 @@ public class UI : MonoBehaviour {
 		showUI = !showUI;
 		EventSystem.current.SetSelectedGameObject (GameObject.FindGameObjectWithTag("Slider"));
 		walls = GameObject.FindGameObjectsWithTag ("Wall");
+	}
 
-
+	public void ChangeLighting(){
+		showUI = !showUI;
+		EventSystem.current.SetSelectedGameObject (GameObject.FindGameObjectWithTag("Slider"));
+		lightObject = GameObject.FindGameObjectWithTag ("Light");
 	}
 
 
@@ -79,5 +84,9 @@ public class UI : MonoBehaviour {
 		foreach (GameObject wall in walls) {
 			wall.GetComponent<Renderer> ().material.color = Color.Lerp(c1, c2, s.value/300f);
 		}
+	}
+
+	public void GetLightSliderValue(Slider s){
+		lightObject.GetComponent<Light>().intensity = s.value/10f;
 	}
 }
