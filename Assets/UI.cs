@@ -12,6 +12,7 @@ public class UI : MonoBehaviour {
 	float red, green, blue;
 	GameObject[] walls;
 	GameObject lightObject;
+	float distanceFromGround = 0;
 
 	// Use this for initialization
 	void Start () {
@@ -32,7 +33,9 @@ public class UI : MonoBehaviour {
 		}
 
 		if (placing) {
-			newObj.transform.position = Camera.main.transform.position - new Vector3(0, 2.5f, 0) + Camera.main.transform.forward * 10;
+			
+
+			newObj.transform.position = new Vector3 (Camera.main.transform.position.x, Camera.main.transform.position.y-distanceFromGround, Camera.main.transform.position.z) + Camera.main.transform.forward * 10;//Camera.main.transform.position - new Vector3(0, distanceFromGround, 0) + Camera.main.transform.forward * 10;
 		}
 	}
 
@@ -42,7 +45,13 @@ public class UI : MonoBehaviour {
 
 		if (placing == false) {
 			Vector3 v = Camera.main.transform.position + Camera.main.transform.forward * 10;	//position in front of the camera's view
-			newObj = (GameObject)Instantiate (Resources.Load ("Toilet"), v, Quaternion.Euler(0,270,0));
+			newObj = (GameObject)Instantiate (Resources.Load ("sofa2"), v, Quaternion.Euler(0,270,0));
+
+			RaycastHit hitInfo;
+			Physics.Raycast (newObj.transform.position, -Vector3.up, out hitInfo);
+			distanceFromGround = hitInfo.distance;
+
+
 			placing = true;
 		} else if (placing == true) {
 			showUI = !showUI;
@@ -57,18 +66,43 @@ public class UI : MonoBehaviour {
 	public void ChangeObject(string s){
 		placing = false;
 		Destroy (newObj);
-		if (s.Equals("Toilet")) {
+		if (s.Equals("Desk")) {
 			Vector3 v = Camera.main.transform.position + Camera.main.transform.forward * 10;	//position in front of the camera's view
 			newObj = (GameObject)Instantiate (Resources.Load (s), v, Quaternion.Euler (0, 270, 0));
+
+			RaycastHit hitInfo;
+			Physics.Raycast (newObj.transform.position, -Vector3.up, out hitInfo);
+			distanceFromGround = hitInfo.distance;
+
 			placing = true;
 		} else if (s.Equals("sofa")) {
 			Vector3 v = Camera.main.transform.position + Camera.main.transform.forward * 10;	//position in front of the camera's view
 			newObj = (GameObject)Instantiate (Resources.Load (s), v, Quaternion.Euler (0, 270, 0));
+
+			RaycastHit hitInfo;
+			Physics.Raycast (newObj.transform.position, -Vector3.up, out hitInfo);
+			distanceFromGround = hitInfo.distance;
+
 			placing = true;
 		}
 		else if (s.Equals("sofa2")) {
 			Vector3 v = Camera.main.transform.position + Camera.main.transform.forward * 10;	//position in front of the camera's view
 			newObj = (GameObject)Instantiate (Resources.Load (s), v, Quaternion.Euler (0, 270, 0));
+
+			RaycastHit hitInfo;
+			Physics.Raycast (newObj.transform.position, -Vector3.up, out hitInfo);
+			distanceFromGround = hitInfo.distance;
+
+			placing = true;
+		}
+		else if (s.Equals("Chair")) {
+			Vector3 v = Camera.main.transform.position + Camera.main.transform.forward * 10;	//position in front of the camera's view
+			newObj = (GameObject)Instantiate (Resources.Load (s), v, Quaternion.Euler (0, 270, 0));
+
+			RaycastHit hitInfo;
+			Physics.Raycast (newObj.transform.position, -Vector3.up, out hitInfo);
+			distanceFromGround = hitInfo.distance;
+
 			placing = true;
 		}
 	}
