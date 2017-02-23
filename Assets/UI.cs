@@ -45,12 +45,32 @@ public class UI : MonoBehaviour {
 			newObj = (GameObject)Instantiate (Resources.Load ("Toilet"), v, Quaternion.Euler(0,270,0));
 			placing = true;
 		} else if (placing == true) {
+			showUI = !showUI;
 			placing = false;
 		}
 	}
 
 	public void RotateObject(){
 		newObj.transform.Rotate (0f, 45f, 0f);
+	}
+
+	public void ChangeObject(string s){
+		placing = false;
+		Destroy (newObj);
+		if (s.Equals("Toilet")) {
+			Vector3 v = Camera.main.transform.position + Camera.main.transform.forward * 10;	//position in front of the camera's view
+			newObj = (GameObject)Instantiate (Resources.Load (s), v, Quaternion.Euler (0, 270, 0));
+			placing = true;
+		} else if (s.Equals("sofa")) {
+			Vector3 v = Camera.main.transform.position + Camera.main.transform.forward * 10;	//position in front of the camera's view
+			newObj = (GameObject)Instantiate (Resources.Load (s), v, Quaternion.Euler (0, 270, 0));
+			placing = true;
+		}
+		else if (s.Equals("sofa2")) {
+			Vector3 v = Camera.main.transform.position + Camera.main.transform.forward * 10;	//position in front of the camera's view
+			newObj = (GameObject)Instantiate (Resources.Load (s), v, Quaternion.Euler (0, 270, 0));
+			placing = true;
+		}
 	}
 
 	public void ChangeWallColour(){
@@ -96,4 +116,6 @@ public class UI : MonoBehaviour {
 	public void GetLightSliderValue(Slider s){
 		lightObject.GetComponent<Light>().intensity = s.value/10f;
 	}
+
+
 }
