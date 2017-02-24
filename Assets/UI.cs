@@ -33,7 +33,6 @@ public class UI : MonoBehaviour {
 		}
 
 		if (placing) {
-			
 
 			newObj.transform.position = new Vector3 (Camera.main.transform.position.x, Camera.main.transform.position.y-distanceFromGround, Camera.main.transform.position.z) + Camera.main.transform.forward * 10;//Camera.main.transform.position - new Vector3(0, distanceFromGround, 0) + Camera.main.transform.forward * 10;
 		}
