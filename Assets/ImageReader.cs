@@ -175,7 +175,8 @@ public class ImageReader : MonoBehaviour {
 		float ratio = width / height;
 		int x_incr = (int) (width / (200f*ratio));			//we use x_incr instead of x++ to skip pixels instead of scanning each one
 		int y_incr = Mathf.Max(1,height / 200);				//x_incr and y_incr values are larger for larger resolution images
-		int top=0, bottom=0, left=0, right=0;				//top, bottom, left, right hold the edge x and y values of the perimeter of the floor plan
+		int top=0, bottom=0, right=0;				//top, bottom, left, right hold the edge x and y values of the perimeter of the floor plan
+		int [] left = new int [height];
 		int oldTop = 0, oldRight = 0;
 		bool[,] wallGrid = new bool [width, height];		//we use wallGrid and windowGrid to remember which x,y coordinates in the floor plan have an object placed there, we use this info to avoid collisions or make other decisions
 		bool[,] windowGrid = new bool [width, height];
@@ -201,12 +202,14 @@ public class ImageReader : MonoBehaviour {
 
 				Color32 c1 = scaledDown.GetPixel (x, y);
 
+
 				//if colour is black, we found a wall
 				if (Mathf.Abs (c1.r - black.r) <= 20) {
 					wallGrid [x, y] = true;
 
-					if(left == 0)
-						left = x;							//leftmost edge of the property, only set once
+					if(left[y] == 0)
+						left[y] = x;							
+					
 					if (bottom == 0) 
 						bottom = y;
 
@@ -239,6 +242,9 @@ public class ImageReader : MonoBehaviour {
 
 					//else if colour is greyish, found a window
 				} else if (Mathf.Abs (c1.r - black.r) > 20 && Mathf.Abs (c1.r - black.r) <= 200) {
+					if(left[y] == 0)
+						left[y] = x;
+
 					windowGrid [x, y] = true;
 
 					if (newWindow.startY == 0) {			//this is the beginning of a window, since window's startY has not been set yet
@@ -298,7 +304,6 @@ public class ImageReader : MonoBehaviour {
 
 
 
-
 		//After scanning through the entire image, wallList now holds all detected objects
 		//Place all the detected objects inside the scene by instantiating a wall, window, door for each object in wallList
 		//The length is adjusted based on the start and endpoints
@@ -307,8 +312,8 @@ public class ImageReader : MonoBehaviour {
 			if (wallList[i].startY != 0) {
 				int length = wallList [i].endY - wallList [i].startY;
 				int center = wallList [i].startY + length / 2;
-				Vector3 v = new Vector3 ((wallList [i].x - 170) * 0.3f, 3f, (center - 150) * 0.3f);		//3D vector that holds the 3D position where we will place the new object
-				float lengthScale = Mathf.Max (1, length / 3.5f);
+				Vector3 v = new Vector3 ((wallList [i].x - 170) * 0.2f, 3f, (center - 150) * 0.2f);		//3D vector that holds the 3D position where we will place the new object
+				float lengthScale = Mathf.Max (1, length / 5f);
 
 				if (wallList [i].type == 0) {
 
@@ -343,13 +348,13 @@ public class ImageReader : MonoBehaviour {
 
 
 					bool rightEdge = Mathf.Abs (wallList [i].x - right) < 3 || Mathf.Abs (wallList [i].endY - oldRight) < 3;
-					bool leftEdge = Mathf.Abs (wallList [i].x - left) < 3;
+					bool leftEdge = Mathf.Abs (wallList [i].x - left[wallList[i].startY]) < 3;
 					bool topEdge = (Mathf.Abs (wallList [i].endY - top) < 3 || Mathf.Abs (wallList [i].endY - oldTop) < 3) && (wallList [i].endY - wallList [i].startY) < 3;
 					bool bottomEdge = (Mathf.Abs (wallList [i].endY - bottom) < 3) && (wallList [i].endY - wallList [i].startY) < 3;
 
 					//if any of the 4 bools are true, it means the detected object lies on the perimeter of the floor plan
 					//we assume that all the windows are along the perimeter
-					if ((rightEdge || leftEdge || topEdge || bottomEdge) && wallList[i].x >=left && wallList[i].startY >= bottom) {	
+					if ((rightEdge || leftEdge || topEdge || bottomEdge) && wallList[i].x >=left[wallList[i].startY] && wallList[i].startY >= bottom) {	
 						/*
 						bool north = !wallGrid [wallList [i].x, Mathf.Min (height - 1, wallList [i].endY + 1)] && !wallGrid [wallList [i].x, Mathf.Min (height - 1, wallList [i].endY + 2)];
 						bool south = !wallGrid [wallList [i].x, Mathf.Max (0, wallList [i].startY - 1)] && !wallGrid [wallList [i].x, Mathf.Max (0, wallList [i].startY - 2)];
@@ -457,7 +462,7 @@ public class ImageReader : MonoBehaviour {
 
 
 
-
+		/*
 
 		//place furniture
 		int frequency = 0;
@@ -477,7 +482,7 @@ public class ImageReader : MonoBehaviour {
 				}
 			}
 		}
-
+		*/
 
 	}
 
