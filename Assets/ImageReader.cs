@@ -487,5 +487,39 @@ public class ImageReader : MonoBehaviour {
 	}
 
 
+
+	public void Bedroom(){
+		Transform cam = Camera.main.gameObject.transform;
+		int x = 0, y = 0;
+		int bedCount = 1;
+		int shelfCount = 5;
+		int space = 5;
+		for (x = (int)cam.position.x - 6; x <= (int)cam.position.x + 6; x++) {
+			for (y = (int)cam.position.z - 6; y <= (int)cam.position.z + 6; y++) {
+				Collider[] bedCol = Physics.OverlapSphere (new Vector3 (x, 5f, y), 8f);
+				Collider[] shelfCol = Physics.OverlapSphere (new Vector3 (x, 5f, y), 1f);
+
+				//2 possible colliders need to ignore: ground and camera
+				if (bedCol.Length <= 2 && bedCount>0) {
+					GameObject newBed = (GameObject)Resources.Load ("Bed");
+					Instantiate (newBed, new Vector3 (x, 2f, y), new Quaternion (0, 0, 0, 0));
+					bedCount -= 1;
+				}
+
+				if (shelfCol.Length > 2 && shelfCount>0) {
+					if (space == 0) {
+						GameObject newShelf = (GameObject)Resources.Load ("Bookshelf");
+						Instantiate (newShelf, new Vector3 (x, 4f, y), new Quaternion (0, 0, 0, 0));
+						shelfCount -= 1;
+						space = 5;
+					}
+					space -= 1;
+				}
+			}
+		}
+
+	}
+
+
 }
 
