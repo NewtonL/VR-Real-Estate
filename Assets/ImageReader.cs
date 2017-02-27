@@ -494,8 +494,8 @@ public class ImageReader : MonoBehaviour {
 		int bedCount = 1;
 		int shelfCount = 5;
 		int space = 5;
-		for (x = (int)cam.position.x - 6; x <= (int)cam.position.x + 6; x++) {
-			for (y = (int)cam.position.z - 6; y <= (int)cam.position.z + 6; y++) {
+		for (x = (int)cam.position.x - 7; x <= (int)cam.position.x + 7; x++) {
+			for (y = (int)cam.position.z - 7; y <= (int)cam.position.z + 7; y++) {
 				Collider[] bedCol = Physics.OverlapSphere (new Vector3 (x, 5f, y), 8f);
 				Collider[] shelfCol = Physics.OverlapSphere (new Vector3 (x, 5f, y), 1f);
 
@@ -514,6 +514,66 @@ public class ImageReader : MonoBehaviour {
 						space = 5;
 					}
 					space -= 1;
+				}
+			}
+		}
+
+	}
+
+
+	public void Kitchen(){
+		Transform cam = Camera.main.gameObject.transform;
+		int x = 0, y = 0;
+		int kitchenCount = 1;
+		int tableCount = 1;
+		for (x = (int)cam.position.x - 7; x <= (int)cam.position.x + 7; x++) {
+			for (y = (int)cam.position.z - 7; y <= (int)cam.position.z + 7; y++) {
+				Collider[] bedCol = Physics.OverlapSphere (new Vector3 (x, 5f, y), 8f);
+				Collider[] shelfCol = Physics.OverlapSphere (new Vector3 (x, 5f, y), 1f);
+
+				//2 possible colliders need to ignore: ground and camera
+				if (bedCol.Length <= 2 && tableCount>0) {
+					GameObject newBed = (GameObject)Resources.Load ("Table");
+					Instantiate (newBed, new Vector3 (x, 2f, y), new Quaternion (0, 0, 0, 0));
+					tableCount -= 1;
+				}
+
+				if (shelfCol.Length > 2 && kitchenCount>0) {
+					int i;
+					for (i = 0; i < shelfCol.Length; i++) {
+						print (i);
+						if (shelfCol [i].gameObject.name.Equals("wall(Clone)")) {
+							break;
+						}
+					}
+					i = Mathf.Min (i, shelfCol.Length - 1);
+					Transform wall = shelfCol [i].gameObject.transform;
+					Quaternion q = Quaternion.Euler(0f, 0f, 0f);
+					Vector3 up = new Vector3 (-1f, 0f, 0f);
+					Vector3 down = new Vector3 (0f, 1f, 0f);
+					Vector3 left = new Vector3 (0f, 0f, -1f);
+					Vector3 right = new Vector3 (0f, 1f, 0f);
+
+
+					Ray r = Camera.main.ScreenPointToRay (wall.position);
+					RaycastHit hitInfo;
+					Physics.Raycast (r, out hitInfo, 10);
+					print (hitInfo.normal);
+
+					if (hitInfo.normal == left)
+						q = Quaternion.Euler(0f, 180f, 0f);
+					else if (hitInfo.normal == right)
+						q = Quaternion.Euler(0f, 0f, 0f);
+					else if (hitInfo.normal == up)
+						q =  Quaternion.Euler(0f, 270f, 0f);
+					else if (hitInfo.normal == down)
+						q = Quaternion.Euler(0f, 90f, 0f);
+
+
+					GameObject newShelf = (GameObject)Resources.Load ("Kitchen");
+					Instantiate (newShelf, new Vector3 (x, 1f, y), q);
+					kitchenCount -= 1;
+
 				}
 			}
 		}
