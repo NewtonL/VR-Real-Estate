@@ -48,6 +48,7 @@
   <ItemGroup>
      <Compile Include="Assets\IgnoreMouse.cs" />
      <Compile Include="Assets\ImageReader.cs" />
+     <Compile Include="Assets\OVR\Scripts\OVRTouchpad.cs" />
      <Compile Include="Assets\TextureScale.cs" />
      <Compile Include="Assets\UI.cs" />
      <Compile Include="Assets\move.cs" />
