@@ -25,12 +25,13 @@ public class UI : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-		if (Input.GetKeyDown ("m")) {	//use ESC key to hide or show menu
-			this.transform.GetChild (0).gameObject.SetActive (showUI);
-			if(showUI)
-				EventSystem.current.SetSelectedGameObject (GameObject.FindGameObjectWithTag("Menu"));
+		if (Input.GetKeyDown ("m") || Input.GetKeyDown(KeyCode.Escape)) {	//use ESC key to hide or show menu
+			this.transform.GetChild (0).gameObject.SetActive (showUI); 
+			EventSystem.current.SetSelectedGameObject (GameObject.Find("Bedroom"));
 			showUI = !showUI;
 		}
+
+
 
 		if (placing) {
 
@@ -147,7 +148,7 @@ public class UI : MonoBehaviour {
 	}
 
 	public void GetLightSliderValue(Slider s){
-		lightObject.GetComponent<Light>().intensity = s.value/10f;
+		lightObject.GetComponent<Light>().intensity = s.value/300f;
 	}
 
 
