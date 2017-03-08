@@ -72,7 +72,7 @@ public class ImageReader : MonoBehaviour {
 	 * Hard codes URL to PlayerPrefs
 	 */
 	public void demo2(){
-		PlayerPrefs.SetString ("path", "http://www.roomsketcher.com/wp-content/uploads/2015/11/RoomSketcher-House-Floor-Plans-962270.jpg");
+		PlayerPrefs.SetString ("path", "http://i.imgur.com/QhhoHPf.jpg");
 		SceneManager.LoadScene ("gearVR");
 	}
 
@@ -517,31 +517,44 @@ public class ImageReader : MonoBehaviour {
 	public void Bedroom(){
 		Transform cam = Camera.main.gameObject.transform;
 		int x = 0, y = 0;
-		int bedCount = 1;
 		int shelfCount = 5;
 		int space = 5;
+		int sIndex = 0;
+		int bIndex = 0;
+		ObjectData[] shelfSpots = new ObjectData[250];
+		ObjectData[] bedSpots = new ObjectData[250];
 		for (x = (int)cam.position.x - 7; x <= (int)cam.position.x + 7; x++) {
 			for (y = (int)cam.position.z - 7; y <= (int)cam.position.z + 7; y++) {
 				Collider[] bedCol = Physics.OverlapSphere (new Vector3 (x, 5f, y), 8f);
 				Collider[] shelfCol = Physics.OverlapSphere (new Vector3 (x, 5f, y), 1f);
 
 				//2 possible colliders need to ignore: ground and camera
-				if (bedCol.Length <= 2 && bedCount>0) {
-					GameObject newBed = (GameObject)Resources.Load ("Bed");
-					Instantiate (newBed, new Vector3 (x, 2f, y), new Quaternion (0, 0, 0, 0));
-					bedCount -= 1;
+				if (bedCol.Length <= 2) {
+					bedSpots [bIndex] = new ObjectData (x, y, null);
+					bIndex += 1;
 				}
 
 				if (shelfCol.Length > 2 && shelfCount>0) {
-					if (space == 0) {
-						GameObject newShelf = (GameObject)Resources.Load ("Bookshelf");
-						Instantiate (newShelf, new Vector3 (x, 4f, y), new Quaternion (0, 0, 0, 0));
-						shelfCount -= 1;
-						space = 5;
+					int i;
+					for (i = 0; i < shelfCol.Length; i++) {
+						if (shelfCol [i].gameObject.name.Equals("wall(Clone)")) {
+							break;
+						}
 					}
-					space -= 1;
+					i = Mathf.Min (i, shelfCol.Length - 1);
+					shelfSpots [sIndex] = new ObjectData (x, y, shelfCol [i]);
+					sIndex += 1;
 				}
 			}
+		}
+
+		ObjectData spot = bedSpots [Random.Range (0, bIndex - 1)];
+		GameObject newBed = (GameObject)Resources.Load ("Bed");
+		Instantiate (newBed, new Vector3 (spot.x, 2f, spot.y), new Quaternion (0, 0, 0, 0));
+
+		for (int i = 0; i < shelfCount; i++) {
+			ObjectData spot2 = shelfSpots [Random.Range (0, sIndex - 1)];
+			AddObjectNearWall (spot2.col, spot2.x, spot2.y, 3, "Bookshelf");
 		}
 
 	}
@@ -579,11 +592,11 @@ public class ImageReader : MonoBehaviour {
 		}
 
 		ObjectData spot = tableSpots [Random.Range (0, tIndex - 1)];
-		GameObject newBed = (GameObject)Resources.Load ("Table");
-		Instantiate (newBed, new Vector3 (spot.x, 2f, spot.y), new Quaternion (0, 0, 0, 0));
+		GameObject newTable = (GameObject)Resources.Load ("Table");
+		Instantiate (newTable, new Vector3 (spot.x, 2f, spot.y), new Quaternion (0, 0, 0, 0));
 
 		spot = kitchenSpots [Random.Range (0, kIndex - 1)];
-		AddObjectNearWall (spot.col, spot.x, spot.y, "Kitchen");
+		AddObjectNearWall (spot.col, spot.x, spot.y, 1, "Kitchen");
 
 	}
 
@@ -591,7 +604,9 @@ public class ImageReader : MonoBehaviour {
 		Transform cam = Camera.main.gameObject.transform;
 		int x = 0, y = 0;
 		ObjectData[] toiletSpots = new ObjectData[250];
-		int index = 0;
+		ObjectData[] bathtubSpots = new ObjectData[250];
+		int tIndex = 0;
+		int bIndex = 0;
 		for (x = (int)cam.position.x - 7; x <= (int)cam.position.x + 7; x++) {
 			for (y = (int)cam.position.z - 7; y <= (int)cam.position.z + 7; y++) {
 				Collider[] bedCol = Physics.OverlapSphere (new Vector3 (x, 5f, y), 8f);
@@ -605,21 +620,30 @@ public class ImageReader : MonoBehaviour {
 							break;
 						}
 					}
-					i = Mathf.Min (i, shelfCol.Length - 1);
-					toiletSpots [index] = new ObjectData (x, y, shelfCol [i]);
-					index += 1;
+					if (Random.Range(0,2)==1) {
+						i = Mathf.Min (i, shelfCol.Length - 1);
+						toiletSpots [tIndex] = new ObjectData (x, y, shelfCol [i]);
+						tIndex += 1;
+					} else {
+						i = Mathf.Min (i, shelfCol.Length - 1);
+						bathtubSpots [bIndex] = new ObjectData (x, y, shelfCol [i]);
+						bIndex += 1;
+					}
 
 				}
 			}
 		}
 
-		ObjectData spot = toiletSpots [Random.Range (0, index - 1)];
-		AddObjectNearWall (spot.col, spot.x, spot.y, "Toilet");
+		ObjectData spot = toiletSpots [Random.Range (0, tIndex - 1)];
+		AddObjectNearWall (spot.col, spot.x, spot.y, 1, "Toilet");
+
+		spot = bathtubSpots [Random.Range (0, bIndex - 1)];
+		AddObjectNearWall (spot.col, spot.x, spot.y, 1, "Bathtub");
 
 	}
 
 
-	public void AddObjectNearWall(Collider col, int x, int y, string obj){
+	public void AddObjectNearWall(Collider col, int x, int y, int z, string obj){
 		Transform wall = col.gameObject.transform;
 		Quaternion q = Quaternion.Euler(0f, 0f, 0f);
 		Vector3 up = new Vector3 (-1f, 0f, 0f);
@@ -644,7 +668,7 @@ public class ImageReader : MonoBehaviour {
 
 
 		GameObject newShelf = (GameObject)Resources.Load (obj);
-		Instantiate (newShelf, new Vector3 (x, 1f, y), q);
+		Instantiate (newShelf, new Vector3 (x, z, y), q);
 
 	}
 
