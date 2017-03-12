@@ -151,5 +151,10 @@ public class UI : MonoBehaviour {
 		lightObject.GetComponent<Light>().intensity = s.value/300f;
 	}
 
+	public void CancelPlaceObject(){
+		Destroy (newObj);
+		placing = false;
+	}
+
 
 }

@@ -22,6 +22,8 @@ limitations under the License.
 using UnityEngine;
 using System;
 
+
+
 /// <summary>
 /// Interface class to a touchpad.
 /// </summary>
@@ -65,7 +67,7 @@ public static class OVRTouchpad
    	};
 
 	static TouchState touchState = TouchState.Init;
-	static Vector2 moveAmount;
+	//static Vector2 moveAmount;
 	static float minMovMagnitude = 100.0f; // Tune this to gage between click and swipe
 	
 	// mouse
@@ -239,9 +241,12 @@ public static class OVRTouchpad
 /// </summary>
 public sealed class OVRTouchpadHelper : MonoBehaviour
 {
+
 	void Awake()
 	{
 		DontDestroyOnLoad(gameObject);
+
+		
 	}
 
 	void Start()

@@ -517,7 +517,7 @@ public class ImageReader : MonoBehaviour {
 	public void Bedroom(){
 		Transform cam = Camera.main.gameObject.transform;
 		int x = 0, y = 0;
-		int shelfCount = 5;
+		int shelfCount = 2;
 		int space = 5;
 		int sIndex = 0;
 		int bIndex = 0;
@@ -547,14 +547,16 @@ public class ImageReader : MonoBehaviour {
 				}
 			}
 		}
-
-		ObjectData spot = bedSpots [Random.Range (0, bIndex - 1)];
-		GameObject newBed = (GameObject)Resources.Load ("Bed");
-		Instantiate (newBed, new Vector3 (spot.x, 2f, spot.y), new Quaternion (0, 0, 0, 0));
-
-		for (int i = 0; i < shelfCount; i++) {
-			ObjectData spot2 = shelfSpots [Random.Range (0, sIndex - 1)];
-			AddObjectNearWall (spot2.col, spot2.x, spot2.y, 3, "Bookshelf");
+		if (bIndex >= 1) {
+			ObjectData spot = bedSpots [Random.Range (0, bIndex - 1)];
+			GameObject newBed = (GameObject)Resources.Load ("Bed");
+			Instantiate (newBed, new Vector3 (spot.x, 2f, spot.y), new Quaternion (0, 0, 0, 0));
+		}
+		if (sIndex >= 1) {
+			for (int i = 0; i < shelfCount; i++) {
+				ObjectData spot2 = shelfSpots [Random.Range (0, sIndex - 1)];
+				AddObjectNearWall (spot2.col, spot2.x, spot2.y, 3, "Bookshelf");
+			}
 		}
 
 	}
@@ -591,12 +593,16 @@ public class ImageReader : MonoBehaviour {
 			}
 		}
 
-		ObjectData spot = tableSpots [Random.Range (0, tIndex - 1)];
-		GameObject newTable = (GameObject)Resources.Load ("Table");
-		Instantiate (newTable, new Vector3 (spot.x, 2f, spot.y), new Quaternion (0, 0, 0, 0));
-
-		spot = kitchenSpots [Random.Range (0, kIndex - 1)];
-		AddObjectNearWall (spot.col, spot.x, spot.y, 1, "Kitchen");
+		ObjectData spot;
+		if (tIndex >= 1) {
+			spot = tableSpots [Random.Range (0, tIndex - 1)];
+			GameObject newTable = (GameObject)Resources.Load ("Table");
+			Instantiate (newTable, new Vector3 (spot.x, 2f, spot.y), new Quaternion (0, 0, 0, 0));
+		}
+		if (kIndex >= 1) {
+			spot = kitchenSpots [Random.Range (0, kIndex - 1)];
+			AddObjectNearWall (spot.col, spot.x, spot.y, 1, "Kitchen");
+		}
 
 	}
 
@@ -633,12 +639,15 @@ public class ImageReader : MonoBehaviour {
 				}
 			}
 		}
-
-		ObjectData spot = toiletSpots [Random.Range (0, tIndex - 1)];
-		AddObjectNearWall (spot.col, spot.x, spot.y, 1, "Toilet");
-
-		spot = bathtubSpots [Random.Range (0, bIndex - 1)];
-		AddObjectNearWall (spot.col, spot.x, spot.y, 1, "Bathtub");
+		ObjectData spot;
+		if (tIndex >= 1) {
+			spot = toiletSpots [Random.Range (0, tIndex - 1)];
+			AddObjectNearWall (spot.col, spot.x, spot.y, 1, "Toilet");
+		}
+		if (bIndex >= 1) {
+			spot = bathtubSpots [Random.Range (0, bIndex - 1)];
+			AddObjectNearWall (spot.col, spot.x, spot.y, 1, "Bathtub");
+		}
 
 	}
 
