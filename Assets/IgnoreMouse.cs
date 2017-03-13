@@ -31,8 +31,8 @@ public class IgnoreMouse : MonoBehaviour {
 				EventSystem.current.SetSelectedGameObject (b.FindSelectableOnDown ().gameObject);
 			}
 			if (touch.TouchType == OVRTouchpad.TouchEvent.SingleTap) {
-
-				b.onClick.Invoke ();
+				if(b.IsActive())
+					b.onClick.Invoke ();
 
 			}
 		} else if (selected.GetComponent<Slider> ()) {
