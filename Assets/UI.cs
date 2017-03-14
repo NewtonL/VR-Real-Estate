@@ -26,9 +26,22 @@ public class UI : MonoBehaviour {
 	void Update () {
 
 		if (Input.GetKeyDown ("m") || Input.GetKeyDown(KeyCode.Escape)) {	//use ESC key to hide or show menu
-			this.transform.GetChild (0).gameObject.SetActive (showUI); 
-			EventSystem.current.SetSelectedGameObject (GameObject.Find("Bedroom"));
-			showUI = !showUI;
+			if (SceneManager.GetActiveScene ().name == "gearVR") {
+				this.transform.GetChild (0).gameObject.SetActive (showUI); 
+				EventSystem.current.SetSelectedGameObject (GameObject.Find ("AddObject"));
+				showUI = !showUI;
+			} else {
+				GameObject tut = GameObject.Find("TutorialCanvas");
+				if (tut.transform.GetChild(1).gameObject.activeSelf) {			//Pic
+					tut.transform.GetChild (4).gameObject.SetActive(true);		//Pic2
+					tut.transform.GetChild (1).gameObject.SetActive (false);	//Pic
+				}
+				else if (tut.transform.GetChild(4).gameObject.activeSelf) {		//Pic2
+					tut.transform.GetChild (0).gameObject.SetActive(true);		//Up
+					EventSystem.current.SetSelectedGameObject(GameObject.Find("Start"));
+					tut.transform.GetChild (4).gameObject.SetActive (false);	//Pic2
+				}
+			}
 		}
 
 
