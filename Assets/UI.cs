@@ -179,5 +179,9 @@ public class UI : MonoBehaviour {
 		placing = false;
 	}
 
+	public void Undo(){
+		Destroy (newObj);
+	}
+
 
 }
