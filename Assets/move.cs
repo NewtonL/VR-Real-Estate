@@ -4,7 +4,7 @@ using System.Collections;
 public class move : MonoBehaviour {
 	Rigidbody rb;
 	Transform cam;
-	float speed = 0.2f;
+	float speed = 0.25f;
 
 	// Use this for initialization
 	void Start () {

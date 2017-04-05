@@ -128,6 +128,15 @@ public class UI : MonoBehaviour {
 
 			placing = true;
 		}
+		else if (s.Equals("table2")) {
+			Vector3 v = Camera.main.transform.position + Camera.main.transform.forward * 10;	//position in front of the camera's view
+			newObj = (GameObject)Instantiate (Resources.Load (s), v, Quaternion.Euler (0, 270, 0));
+			RaycastHit hitInfo;
+			Physics.Raycast (newObj.transform.position, -Vector3.up, out hitInfo);
+			distanceFromGround = hitInfo.distance;
+
+			placing = true;
+		}
 	}
 
 	public void ChangeWallColour(){

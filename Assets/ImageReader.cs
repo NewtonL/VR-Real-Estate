@@ -379,6 +379,7 @@ public class ImageReader : MonoBehaviour {
 							view.transform.localScale = new Vector3 (1f, 3.6f, lengthScale);
 							Instantiate (view, v, q);
 
+
 						} /*else {
 							//if we are overlapping neighbour walls, decrease our length until we are not
 							while (wallList [i].startY < wallList [i].endY) {	
@@ -409,7 +410,7 @@ public class ImageReader : MonoBehaviour {
 					} else {	//if the detected object is not on the perimeter, and is not a wall, we treat it as a door
 						//doors are detected using a diagonal line, therefore we get NE, SE, NW and SW to detect the presence of a diagonal
 						//each boolean value is only true if the diagonal is at least 3 pixels long
-
+						/*
 						bool northeast = windowGrid [Mathf.Min(width-1, wallList [i].x + 1), Mathf.Min (height - 1, wallList [i].endY + 1)] && windowGrid [Mathf.Min(width-1, wallList [i].x + 2), Mathf.Min (height - 1, wallList [i].endY + 2)] && windowGrid [Mathf.Min(width-1, wallList [i].x + 3), Mathf.Min (height - 1, wallList [i].endY + 3)];
 						bool southeast = windowGrid [Mathf.Min(width-1, wallList [i].x + 1), Mathf.Max (0, wallList [i].startY - 1)] && windowGrid [Mathf.Min(width-1, wallList [i].x + 2), Mathf.Max (0, wallList [i].startY - 2)] && windowGrid [Mathf.Min(width-1, wallList [i].x + 3), Mathf.Max (0, wallList [i].startY - 3)];
 						bool northwest = windowGrid [Mathf.Max(0, wallList [i].x - 1), Mathf.Min (height - 1, wallList [i].endY + 1)] && windowGrid [Mathf.Max(0, wallList [i].x - 2), Mathf.Min (height - 1, wallList [i].endY + 2)] && windowGrid [Mathf.Max(0, wallList [i].x - 3), Mathf.Min (height - 1, wallList [i].endY + 3)];
@@ -459,7 +460,7 @@ public class ImageReader : MonoBehaviour {
 
 						}
 
-
+						*/
 					}
 				} 
 			}
@@ -555,7 +556,8 @@ public class ImageReader : MonoBehaviour {
 		if (bIndex >= 1) {
 			ObjectData spot = bedSpots [Random.Range (0, bIndex - 1)];
 			GameObject newBed = (GameObject)Resources.Load ("Bed");
-			Instantiate (newBed, new Vector3 (spot.x, 2f, spot.y), new Quaternion (0, 0, 0, 0));
+			newBed.transform.localScale = new Vector3 (70f, 70f, 70f);
+			Instantiate (newBed, new Vector3 (spot.x, 1.5f, spot.y), new Quaternion (0, 0, 0, 0));
 		}
 		if (sIndex >= 1) {
 			for (int i = 0; i < shelfCount; i++) {
