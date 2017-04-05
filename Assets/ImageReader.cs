@@ -374,6 +374,11 @@ public class ImageReader : MonoBehaviour {
 							newWindow.transform.localScale = new Vector3 (1f, 6f, lengthScale);
 							Instantiate (newWindow, v, q);
 
+							GameObject view = (GameObject)Resources.Load ("view");
+							view.GetComponent<Renderer>().sharedMaterial.mainTextureScale = new Vector2(lengthScale/5,1);
+							view.transform.localScale = new Vector3 (1f, 3.6f, lengthScale);
+							Instantiate (view, v, q);
+
 						} /*else {
 							//if we are overlapping neighbour walls, decrease our length until we are not
 							while (wallList [i].startY < wallList [i].endY) {	
